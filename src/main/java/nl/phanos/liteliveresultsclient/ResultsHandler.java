@@ -57,7 +57,7 @@ public class ResultsHandler extends Thread {
                     ((AtletiekNuPanel)AtletiekNuPanel.panel).loginHandler.submitResults(files);
                     System.out.println("upload");
                 }
-                files.clear();
+                files = new ArrayList<ParFile>();
             } catch (Exception ex) {
                 System.out.println("failed to upload");
                 Logger.getLogger(ResultsHandler.class.getName()).log(Level.SEVERE, null, ex);

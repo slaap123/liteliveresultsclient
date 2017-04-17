@@ -97,6 +97,7 @@ public class LoginHandler {
     public void submitResults(ArrayList<ParFile> files) throws Exception {
         String url = "https://www.atletiek.nu/feeder.php?page=resultateninvoer&do=uploadresultaat&event_id=" + nuid + "";
         System.out.println(url);
+        for (int i = 0; i < files.size(); i++) {
         HttpPost post = new HttpPost(url);
 
         post.setHeader("User-Agent", USER_AGENT);
@@ -104,11 +105,13 @@ public class LoginHandler {
         post.setHeader("Accept-Language", "en-US,en;q=0.5");
         post.setHeader("Cookie", getCookies());
         MultipartEntity mpEntity = new MultipartEntity();
-        for (int i = 0; i < files.size(); i++) {
+        System.out.println("files:"+files.size());
+        
             File file = files.get(i).resultFile;
             ContentBody cbFile = new FileBody(file, "text/plain");
             mpEntity.addPart("files", cbFile);
-        }
+            System.out.println("added file to upload");
+        
         post.setEntity(mpEntity);
 
         HttpResponse response = client.execute(post);
@@ -123,19 +126,20 @@ public class LoginHandler {
         JSONObject obj = null;
         try {
             obj = new JSONObject(responseString);
+            System.out.println("succes:"+responseString);
         } catch (Exception e) {
-            System.out.println(responseString);
+            System.out.println("error:"+responseString);
         }
         if (obj != null) {
             for (Object FileObj : (JSONArray) obj.get("files")) {
                 JSONObject JSONFile = (JSONObject) FileObj;
-                String text = AtletiekNuPanel.panel.jTextPane1.getText();
-                AtletiekNuPanel.panel.jTextPane1.setText("Uploaded " + JSONFile.get("name") + " met " + JSONFile.get("totaalverwerkt") + " atleten\n" + text);
+                AtletiekNuPanel.panel.addText("Uploaded " + JSONFile.get("name") + " met " + JSONFile.get("totaalverwerkt") + " atleten");
             }
         }
         // set cookies
         setCookies(response.getFirstHeader("Set-Cookie") == null ? "" : response.getFirstHeader("Set-Cookie").toString());
         post.releaseConnection();
+        }
         //getZip(nuid);
     }
 

@@ -2,6 +2,7 @@ package nl.phanos.liteliveresultsclient;
 
 import java.awt.FileDialog;
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -192,6 +193,13 @@ public class AtletiekNuPanel extends JPanel {
             Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    void addText(String string) {
+        String text = jTextPane1.getText();
+        if(!Arrays.asList(text.split("\n")).contains(string)){
+            jTextPane1.setText(string +"\n"+ text);
+        }
     }
 
 }
