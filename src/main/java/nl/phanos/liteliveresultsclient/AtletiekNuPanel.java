@@ -11,7 +11,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import nl.phanos.liteliveresultsclient.classes.*;
 import nl.phanos.liteliveresultsclient.gui.Main;
 
@@ -24,7 +27,7 @@ import nl.phanos.liteliveresultsclient.gui.Main;
  *
  * @author woutermkievit
  */
-public class AtletiekNuPanel extends JPanel {
+public class AtletiekNuPanel extends JPanel implements TableModelListener {
 
     private javax.swing.JSplitPane jSplitPane1 = new javax.swing.JSplitPane();
     public javax.swing.JTextPane jTextPane1 = new JTextPane();
@@ -37,7 +40,7 @@ public class AtletiekNuPanel extends JPanel {
     private String nuid;
     private File baseDir;
     public final static boolean test = false;
-    public final static boolean live = true;
+    public final static boolean live = false;//true;
     public HashMap<String, ParFile> parFiles = new HashMap<String, ParFile>();
 
     public static AtletiekNuPanel panel;
@@ -73,14 +76,14 @@ public class AtletiekNuPanel extends JPanel {
         parFileNames.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "parfile", "onderdeel", "serie"
+                    "parfile", "onderdeel", "serie", "Done"
                 }
         ) {
             Class[] types = new Class[]{
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean[]{
-                false, false, false
+                false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -91,6 +94,7 @@ public class AtletiekNuPanel extends JPanel {
                 return canEdit[columnIndex];
             }
         });
+        parFileNames.getModel().addTableModelListener(this);
         jScrollPane4.setViewportView(parFileNames);
 
         jSplitPane1.setLeftComponent(jScrollPane4);
@@ -110,7 +114,7 @@ public class AtletiekNuPanel extends JPanel {
                 .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
         );
 
-        tPane.addTab("AteltiekNu", this);
+        tPane.addTab("AtletiekNu", this);
         unzip = new UnzipUtility();
         try {
             if (!AtletiekNuPanel.panel.test) {
@@ -125,6 +129,18 @@ public class AtletiekNuPanel extends JPanel {
         }
         ResultsHandler handelr = new ResultsHandler(baseDir);
         handelr.start();
+    }
+
+    public void tableChanged(TableModelEvent e) {
+        if (e.getType() == TableModelEvent.UPDATE) {
+            int row = e.getFirstRow();
+            int column = e.getColumn();
+            TableModel model = (TableModel) e.getSource();
+            String columnName = model.getColumnName(column);
+            String name = (String) model.getValueAt(row, 0);
+            ParFile entry = parFiles.get(name);
+            entry.done = (boolean) model.getValueAt(row, 3);
+        }
     }
 
     public void UpdateList() {
@@ -157,7 +173,7 @@ public class AtletiekNuPanel extends JPanel {
                     }
                     //System.out.println("GotResults:" + entry.gotResults);
                     if (!entry.gotResults) {
-                        ((DefaultTableModel) parFileNames.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie});
+                        ((DefaultTableModel) parFileNames.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie, entry.done});
                     }
                     parFiles.put(fileEntry.getName(), entry);
                 }
@@ -197,8 +213,8 @@ public class AtletiekNuPanel extends JPanel {
 
     void addText(String string) {
         String text = jTextPane1.getText();
-        if(!Arrays.asList(text.split("\n")).contains(string)){
-            jTextPane1.setText(string +"\n"+ text);
+        if (!Arrays.asList(text.split("\n")).contains(string)) {
+            jTextPane1.setText(string + "\n" + text);
         }
     }
 

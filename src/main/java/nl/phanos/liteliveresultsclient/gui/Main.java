@@ -31,6 +31,11 @@ public class Main extends javax.swing.JFrame {
                     null,
                     null,
                     "");
+                if(s==null){
+                    this.dispose();
+                    System.exit(0);
+                    return;
+                }
         }while(!s.matches("-?\\d+"));
         AtletiekNuPanel.GetAtletiekNuPanel(jTabbedPane1, Integer.parseInt(s));
 

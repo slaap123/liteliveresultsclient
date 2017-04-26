@@ -36,6 +36,7 @@ public class ParFile {
     public boolean gotResults=false;
     public Long resultSize=-1L;
     public File resultFile=null;
+    public boolean done=false;
     
 
     public ParFile() {

@@ -45,7 +45,7 @@ public class ResultsHandler extends Thread {
             for (File fileEntry : dir.listFiles()) {
                 if (fileEntry.getName().endsWith("txt")) {
                     ParFile parFile = AtletiekNuPanel.panel.parFiles.get(fileEntry.getName().replace("txt", "par"));
-                    if (parFile != null && parFile.resultSize != fileEntry.length()) {
+                    if (parFile != null && parFile.done && parFile.resultSize != fileEntry.length()) {
                         parFile.resultFile = fileEntry;
                         parFile.gotResults = true;
                         files.add(parFile);
@@ -53,7 +53,7 @@ public class ResultsHandler extends Thread {
                 }
             }
             try {
-                if (AtletiekNuPanel.panel.live && files.size() > 0&&AtletiekNuPanel.panel.getClass()==AtletiekNuPanel.class){
+                if (AtletiekNuPanel.panel.live && files.size() > 0){
                     ((AtletiekNuPanel)AtletiekNuPanel.panel).loginHandler.submitResults(files);
                     System.out.println("upload");
                 }
