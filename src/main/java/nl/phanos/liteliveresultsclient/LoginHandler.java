@@ -15,10 +15,13 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpEntity;
@@ -63,7 +66,18 @@ public class LoginHandler {
                 = this.getFormParams(page, "phanosit@gmail.com", "2D400box");
         this.sendPost(url, postParams);
     }
-
+    public static boolean isReachable() {
+    // Any Open port on other machine
+    // openPort =  22 - ssh, 80 or 443 - webserver, 25 - mailserver etc.
+    try {
+        try (Socket soc = new Socket()) {
+            soc.connect(new InetSocketAddress("www.atletiek.nu", 80), 2000);
+        }
+        return true;
+    } catch (IOException ex) {
+        return false;
+    }
+    }
     public void getZip() throws Exception {
         String url = "https://www.atletiek.nu/feeder.php?page=exportstartlijstentimetronics&event_id=" + nuid + "&forceAlleenGeprinteLijsten=1";
         System.out.println(url);
