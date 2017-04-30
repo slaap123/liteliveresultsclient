@@ -35,6 +35,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     private javax.swing.JScrollPane jScrollPane4 = new JScrollPane();
     private javax.swing.JScrollPane jScrollPane5 = new JScrollPane();
     private JTabbedPane tPane;
+    private DonePanel doneView;
     public LoginHandler loginHandler;
     private UnzipUtility unzip;
     private String nuid;
@@ -70,7 +71,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         if (!baseDir.isDirectory()) {
             baseDir = baseDir.getParentFile();
         }
-
+        
         tPane = pane;
         this.nuid = nuid + "";
         parFileNames.setModel(new javax.swing.table.DefaultTableModel(
@@ -115,6 +116,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         );
 
         tPane.addTab("AtletiekNu", this);
+        doneView=new DonePanel(pane,this);
         unzip = new UnzipUtility();
         try {
             if (!AtletiekNuPanel.panel.test) {
@@ -162,6 +164,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
             unzip.unzip("tmp.zip", baseDir.getPath());
             new File("tmp.zip").delete();
             ((DefaultTableModel) parFileNames.getModel()).setRowCount(0);
+            ((DefaultTableModel) doneView.doneParFiles.getModel()).setRowCount(0);
             for (File fileEntry : baseDir.listFiles()) {
                 if (fileEntry.getName().endsWith("par")) {
                     ParFile entry = null;
@@ -174,6 +177,8 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                     //System.out.println("GotResults:" + entry.gotResults);
                     if (!entry.gotResults) {
                         ((DefaultTableModel) parFileNames.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie, entry.done});
+                    }else{
+                        ((DefaultTableModel) doneView.doneParFiles.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie,entry.atleten.size(), entry.forceUpload});
                     }
                     parFiles.put(fileEntry.getName(), entry);
                 }
