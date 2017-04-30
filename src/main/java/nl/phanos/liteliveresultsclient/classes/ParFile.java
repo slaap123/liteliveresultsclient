@@ -37,6 +37,8 @@ public class ParFile {
     public Long resultSize=-1L;
     public File resultFile=null;
     public boolean done=false;
+    public boolean forceUpload=false;
+    
     
 
     public ParFile() {
