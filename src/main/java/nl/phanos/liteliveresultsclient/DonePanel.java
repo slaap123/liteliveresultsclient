@@ -69,12 +69,10 @@ public class DonePanel extends JPanel implements TableModelListener {
     public void tableChanged(TableModelEvent e) {
         if (e.getType() == TableModelEvent.UPDATE) {
             int row = e.getFirstRow();
-            int column = e.getColumn();
             TableModel model = (TableModel) e.getSource();
-            String columnName = model.getColumnName(column);
             String name = (String) model.getValueAt(row, 0);
             ParFile entry = atletiekNuPanel.parFiles.get(name);
-            entry.done = (boolean) model.getValueAt(row, 3);
+            entry.forceUpload = (boolean) model.getValueAt(row, 4);
         }
     }
 

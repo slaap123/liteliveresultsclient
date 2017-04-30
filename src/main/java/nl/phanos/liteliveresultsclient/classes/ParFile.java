@@ -38,7 +38,8 @@ public class ParFile {
     public File resultFile=null;
     public boolean done=false;
     public boolean forceUpload=false;
-    
+    public boolean foundResult=false;
+    public String UploadedAtleten;
     
 
     public ParFile() {

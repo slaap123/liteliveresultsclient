@@ -147,6 +147,7 @@ public class LoginHandler {
         if (obj != null) {
             for (Object FileObj : (JSONArray) obj.get("files")) {
                 JSONObject JSONFile = (JSONObject) FileObj;
+                files.get(i).UploadedAtleten=(String)JSONFile.get("totaalverwerkt");
                 AtletiekNuPanel.panel.addText("Uploaded " + JSONFile.get("name") + " met " + JSONFile.get("totaalverwerkt") + " atleten");
             }
         }
