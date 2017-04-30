@@ -41,32 +41,41 @@ public class ResultsHandler extends Thread {
     @Override
     public void run() {
         while (true) {
-            System.out.println("start reading");
-            for (File fileEntry : dir.listFiles()) {
-                if (fileEntry.getName().endsWith("txt")) {
-                    ParFile parFile = AtletiekNuPanel.panel.parFiles.get(fileEntry.getName().replace("txt", "par"));
-                    if (parFile != null && parFile.done && parFile.resultSize != fileEntry.length()) {
-                        parFile.resultFile = fileEntry;
-                        parFile.gotResults = true;
-                        files.add(parFile);
+            if (LoginHandler.isReachable()) {
+                AtletiekNuPanel.panel.removeLine(NO_INTERNET_CONNECTION_WAITING_10_SECONDS);
+                System.out.println("start reading");
+                for (File fileEntry : dir.listFiles()) {
+                    if (fileEntry.getName().endsWith("txt")) {
+                        ParFile parFile = AtletiekNuPanel.panel.parFiles.get(fileEntry.getName().replace("txt", "par"));
+                        if (parFile != null) {
+                            parFile.foundResult = true;
+                            if (parFile.done && parFile.resultSize != fileEntry.length()) {
+                                parFile.resultSize = fileEntry.length();
+                                parFile.resultFile = fileEntry;
+                                parFile.gotResults = true;
+                                files.add(parFile);
+                            }
+                        }
                     }
                 }
-            }
-            try {
-                if (AtletiekNuPanel.panel.live && files.size() > 0){
-                    ((AtletiekNuPanel)AtletiekNuPanel.panel).loginHandler.submitResults(files);
-                    System.out.println("upload");
+                try {
+                    if (AtletiekNuPanel.panel.live && files.size() > 0) {
+                        ((AtletiekNuPanel) AtletiekNuPanel.panel).loginHandler.submitResults(files);
+                        System.out.println("upload");
+                    }
+                    files = new ArrayList<ParFile>();
+                } catch (Exception ex) {
+                    System.out.println("failed to upload");
+                    Logger.getLogger(ResultsHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                files = new ArrayList<ParFile>();
-            } catch (Exception ex) {
-                System.out.println("failed to upload");
-                Logger.getLogger(ResultsHandler.class.getName()).log(Level.SEVERE, null, ex);
+
+                AtletiekNuPanel.panel.UpdateList();
+                System.out.println("end reading");
+                //if(!ResultsPanel.panel.test){
+                //}
+            }else{
+                AtletiekNuPanel.panel.addText(NO_INTERNET_CONNECTION_WAITING_10_SECONDS);
             }
-            
-            AtletiekNuPanel.panel.UpdateList();
-            System.out.println("end reading");
-            //if(!ResultsPanel.panel.test){
-            //}
             try {
                 sleep(10000);
             } catch (InterruptedException ex) {
@@ -75,4 +84,5 @@ public class ResultsHandler extends Thread {
 
         }
     }
+    private static final String NO_INTERNET_CONNECTION_WAITING_10_SECONDS = "No internet connection!!!";
 }

@@ -1,9 +1,12 @@
 package nl.phanos.liteliveresultsclient;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.FileDialog;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -14,6 +17,7 @@ import javax.swing.JTextPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import nl.phanos.liteliveresultsclient.classes.*;
 import nl.phanos.liteliveresultsclient.gui.Main;
@@ -58,6 +62,12 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         }
         return panel;
     }
+    public static AtletiekNuPanel GetAtletiekNuPanel() {
+        if (panel != null) {
+            return panel;
+        }
+        return null;
+    }
 
     private AtletiekNuPanel(final JTabbedPane pane, int nuid) {
 
@@ -94,6 +104,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                 return canEdit[columnIndex];
             }
         });
+        parFileNames.getColumnModel().getColumn(2).setCellRenderer(new StatusColumnCellRenderer());
         parFileNames.getModel().addTableModelListener(this);
         jScrollPane4.setViewportView(parFileNames);
 
@@ -136,7 +147,6 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
             int row = e.getFirstRow();
             int column = e.getColumn();
             TableModel model = (TableModel) e.getSource();
-            String columnName = model.getColumnName(column);
             String name = (String) model.getValueAt(row, 0);
             ParFile entry = parFiles.get(name);
             entry.done = (boolean) model.getValueAt(row, 3);
@@ -216,6 +226,17 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         if (!Arrays.asList(text.split("\n")).contains(string)) {
             jTextPane1.setText(string + "\n" + text);
         }
+    }
+    void removeLine(String string) {
+        String text = jTextPane1.getText();
+        List<String> lines = Arrays.asList(text.split("\n"));
+        String newText="";
+        for (String line : lines) {
+            if(!line.equals(string)){
+                newText+="\n"+line;
+            }
+        }
+        jTextPane1.setText(newText.substring(Math.min(1,newText.length())));
     }
 
 }
