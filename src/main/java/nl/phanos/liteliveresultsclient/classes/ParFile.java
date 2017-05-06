@@ -78,7 +78,7 @@ public class ParFile {
         serie=lines[5].split(":",2)[1].replaceAll("[ \t\r\n]*", "");
         for (int i = 6; i < lines.length; i++) {
             if(lines[i].length()>2){
-                atleten.add(new ParFileEntry(lines[i].split("\t")));
+                //atleten.add(new ParFileEntry(lines[i].split("\t")));
             }
         }
     }

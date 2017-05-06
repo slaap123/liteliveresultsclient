@@ -62,6 +62,7 @@ public class ResultsHandler extends Thread {
                 }
                 try {
                     System.out.println("files:"+ files.size());
+                    System.out.println(AtletiekNuPanel.panel.live?"true":"false");
                     if (AtletiekNuPanel.panel.live && files.size() > 0) {
                         ((AtletiekNuPanel) AtletiekNuPanel.panel).loginHandler.submitResults(files);
                         System.out.println("upload");
