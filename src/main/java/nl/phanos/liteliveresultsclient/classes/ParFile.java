@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author woutermkievit
  */
-public class ParFile {
+public class ParFile implements java.io.Serializable {
 
     public int startlijst_onderdeel_id;
     public String versie;

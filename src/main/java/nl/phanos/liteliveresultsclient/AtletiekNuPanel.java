@@ -1,14 +1,18 @@
 package nl.phanos.liteliveresultsclient;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.FileDialog;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -17,7 +21,6 @@ import javax.swing.JTextPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import nl.phanos.liteliveresultsclient.classes.*;
 import nl.phanos.liteliveresultsclient.gui.Main;
@@ -63,6 +66,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         }
         return panel;
     }
+
     public static AtletiekNuPanel GetAtletiekNuPanel() {
         if (panel != null) {
             return panel;
@@ -81,7 +85,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         if (!baseDir.isDirectory()) {
             baseDir = baseDir.getParentFile();
         }
-        
+
         tPane = pane;
         this.nuid = nuid + "";
         parFileNames.setModel(new javax.swing.table.DefaultTableModel(
@@ -127,7 +131,10 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         );
 
         tPane.addTab("AtletiekNu", this);
-        doneView=new DonePanel(pane,this);
+        doneView = new DonePanel(pane, this);
+
+        reloadParFiles();
+
         unzip = new UnzipUtility();
         try {
             if (!AtletiekNuPanel.panel.test) {
@@ -187,8 +194,8 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                     //System.out.println("GotResults:" + entry.gotResults);
                     if (!entry.gotResults) {
                         ((DefaultTableModel) parFileNames.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie, entry.done});
-                    }else{
-                        ((DefaultTableModel) doneView.doneParFiles.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie,entry.UploadedAtleten, entry.forceUpload});
+                    } else {
+                        ((DefaultTableModel) doneView.doneParFiles.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie, entry.UploadedAtleten, entry.forceUpload});
                     }
                     parFiles.put(fileEntry.getName(), entry);
                 }
@@ -232,16 +239,62 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
             jTextPane1.setText(string + "\n" + text);
         }
     }
+
     void removeLine(String string) {
         String text = jTextPane1.getText();
         List<String> lines = Arrays.asList(text.split("\n"));
-        String newText="";
+        String newText = "";
         for (String line : lines) {
-            if(!line.equals(string)){
-                newText+="\n"+line;
+            if (!line.equals(string)) {
+                newText += "\n" + line;
             }
         }
-        jTextPane1.setText(newText.substring(Math.min(1,newText.length())));
+        jTextPane1.setText(newText.substring(Math.min(1, newText.length())));
+    }
+
+    private void reloadParFiles() {
+        
+        Main.getWindow().addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                ObjectOutputStream oos = null;
+                FileOutputStream fout = null;
+                try {
+                    fout = new FileOutputStream(baseDir.getAbsolutePath() + "/results.ser",false);
+                    oos = new ObjectOutputStream(fout);
+                    oos.writeObject(parFiles);
+                } catch (Exception ex) {
+                    System.out.println("Failed to write results");
+                    ex.printStackTrace();
+                } finally {
+                    if (oos != null) {
+                        try {
+                            oos.close();
+                        } catch (IOException ex) {
+                            Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+
+            }
+        });
+        ObjectInputStream objectinputstream = null;
+        try {
+            FileInputStream streamIn = new FileInputStream(baseDir.getAbsolutePath() + "/results.ser");
+            objectinputstream = new ObjectInputStream(streamIn);
+            HashMap<String, ParFile> readCase = (HashMap<String, ParFile>) objectinputstream.readObject();
+            parFiles = (readCase);
+        } catch (Exception e) {
+            System.out.println("Failed to load old results");
+        } finally {
+            if (objectinputstream != null) {
+                try {
+                    objectinputstream.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
 }
