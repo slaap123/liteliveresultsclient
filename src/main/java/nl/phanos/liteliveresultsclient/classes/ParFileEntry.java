@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  *
  * @author woutermkievit
  */
-public class ParFileEntry {
+public class ParFileEntry implements java.io.Serializable{
     String startnummer;
     String baan;
     String naam;

@@ -15,11 +15,20 @@ import nl.phanos.liteliveresultsclient.AtletiekNuPanel;
  */
 public class Main extends javax.swing.JFrame {
     public static Frame mainObj;
-
+    public static Main window;
+    
+    public static Main getWindow(){
+        if(window!=null){
+            return window;
+        }
+        return null;
+    }
+    
     /**
      * Creates new form MainWindow
      */
      public Main() {
+        window=this;
         initComponents();
         String s;
         do{
