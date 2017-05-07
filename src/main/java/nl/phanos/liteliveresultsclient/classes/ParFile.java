@@ -15,6 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +34,7 @@ public class ParFile implements java.io.Serializable {
     public String onderdeel;
     public String serie;
     public String fileName;
-    public ArrayList<ParFileEntry> atleten = new ArrayList();
+    public HashMap<Integer,ParFileEntry> atleten = new HashMap();
     public boolean gotResults=false;
     public Long resultSize=-1L;
     public File resultFile=null;
@@ -40,6 +42,7 @@ public class ParFile implements java.io.Serializable {
     public boolean forceUpload=false;
     public boolean foundResult=false;
     public String UploadedAtleten;
+    public boolean keepLocal=false;
     
 
     public ParFile() {
@@ -73,12 +76,23 @@ public class ParFile implements java.io.Serializable {
         startlijst_onderdeel_id=Integer.parseInt(lines[0].split(":")[1].replaceAll("[ \t\n\r]*", ""));
         versie=lines[1].split(":",2)[1].replaceAll("[ \t\r\n]*", "");
         begin_tijd=lines[2].split(":",2)[1].replaceAll("[ \t\r\n]*", "");
-        startgroep=lines[3].split(":",2)[1].replaceAll("[ \t\r\n]*", "");
-        onderdeel=lines[4].split(":",2)[1].replaceAll("[ \t\r\n]*", "");
-        serie=lines[5].split(":",2)[1].replaceAll("[ \t\r\n]*", "");
+        String temp_startgroep=lines[3].split(":",2)[1].replaceAll("[ \t\r\n]*", "");
+        String temp_onderdeel=lines[4].split(":",2)[1].replaceAll("[ \t\r\n]*", "");
+        String temp_serie=lines[5].split(":",2)[1].replaceAll("[ \t\r\n]*", "");
+        if(temp_startgroep!=startgroep&&temp_onderdeel!=onderdeel&&temp_serie!=serie){
+            atleten=new HashMap();
+        }
+        startgroep=temp_startgroep;
+        onderdeel=temp_onderdeel;
+        serie=temp_serie;
         for (int i = 6; i < lines.length; i++) {
-            if(lines[i].length()>2){
-                //atleten.add(new ParFileEntry(lines[i].split("\t")));
+            if(lines[i].split("\t").length>2){
+                int baan=Integer.parseInt(lines[i].split("\t")[1]);
+                if(!atleten.containsKey(baan)){
+                    atleten.put(baan,new ParFileEntry(lines[i].split("\t")));
+                }else{
+                    atleten.get(baan).Update(lines[i].split("\t"));
+                }
             }
         }
     }
@@ -86,7 +100,7 @@ public class ParFile implements java.io.Serializable {
     public void writeValuesToFile(){
         List<String> lines=new ArrayList<String>();
         lines.addAll(getHeaderInfo());
-        for(ParFileEntry entry : atleten){
+        for(ParFileEntry entry : atleten.values()){
             lines.add(entry.startnummer+"\t"+entry.baan+"\t"+entry.naam+"\t"+entry.info);
         }
         try {
