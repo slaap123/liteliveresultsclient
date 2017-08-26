@@ -40,6 +40,7 @@ public class ParFile implements java.io.Serializable {
     public boolean forceUpload=false;
     public boolean foundResult=false;
     public String UploadedAtleten;
+    public long uploadDate=0;
     
 
     public ParFile() {

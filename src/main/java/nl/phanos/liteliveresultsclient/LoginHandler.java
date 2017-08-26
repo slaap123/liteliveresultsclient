@@ -23,6 +23,7 @@ import java.net.CookieManager;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import org.apache.http.HttpEntity;
 
@@ -148,6 +149,7 @@ public class LoginHandler {
             for (Object FileObj : (JSONArray) obj.get("files")) {
                 JSONObject JSONFile = (JSONObject) FileObj;
                 files.get(i).UploadedAtleten=(String)JSONFile.get("totaalverwerkt");
+                files.get(i).uploadDate=Calendar.getInstance().getTimeInMillis();
                 AtletiekNuPanel.panel.addText("Uploaded " + JSONFile.get("name") + " met " + JSONFile.get("totaalverwerkt") + " atleten");
             }
         }
