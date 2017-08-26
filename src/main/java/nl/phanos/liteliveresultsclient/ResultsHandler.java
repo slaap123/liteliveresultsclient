@@ -79,6 +79,7 @@ public class ResultsHandler extends Thread {
             }else{
                 AtletiekNuPanel.panel.addText(NO_INTERNET_CONNECTION_WAITING_10_SECONDS);
             }
+            AtletiekNuPanel.panel.savePrefResults();
             try {
                 sleep(10000);
             } catch (InterruptedException ex) {
