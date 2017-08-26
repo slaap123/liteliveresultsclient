@@ -53,7 +53,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     private String nuid;
     private File baseDir;
     public final static boolean test = false;
-    public final static boolean live = false;//true;
+    public final static boolean live = true;
     public HashMap<String, ParFile> parFiles = new HashMap<String, ParFile>();
 
     public static AtletiekNuPanel panel;
@@ -170,6 +170,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
             String name = (String) model.getValueAt(row, 0);
             ParFile entry = parFiles.get(name);
             entry.done = (boolean) model.getValueAt(row, 3);
+            entry.keepLocal = (boolean) model.getValueAt(row, 4);
         }
     }
 
@@ -205,9 +206,9 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                     }
                     //System.out.println("GotResults:" + entry.gotResults);
                     if (!entry.gotResults) {
-                        ((DefaultTableModel) parFileNames.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie, entry.done});
+                        ((DefaultTableModel) parFileNames.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie+"("+entry.atleten.size()+")", entry.done});
                     } else {
-                        ((DefaultTableModel) doneView.doneParFiles.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie, entry.UploadedAtleten, entry.forceUpload});
+                        ((DefaultTableModel) doneView.doneParFiles.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie+"("+entry.atleten.size()+")", entry.UploadedAtleten, entry.forceUpload});
                     }
                     parFiles.put(fileEntry.getName(), entry);
                 }

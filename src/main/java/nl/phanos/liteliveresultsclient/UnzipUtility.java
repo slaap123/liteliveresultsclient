@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import nl.phanos.liteliveresultsclient.classes.ParFile;
  
 /**
  * This utility extracts files and directories of a standard zip file to
@@ -38,7 +40,7 @@ public class UnzipUtility {
             String filePath = destDirectory + File.separator + entry.getName();
             if (!entry.isDirectory()) {
                 // if the entry is a file, extracts it
-                extractFile(zipIn, filePath);
+                    extractFile(zipIn, filePath);
             } else {
                 // if the entry is a directory, make the directory
                 File dir = new File(filePath);
