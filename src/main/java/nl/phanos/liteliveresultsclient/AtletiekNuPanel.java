@@ -170,7 +170,6 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
             String name = (String) model.getValueAt(row, 0);
             ParFile entry = parFiles.get(name);
             entry.done = (boolean) model.getValueAt(row, 3);
-            entry.keepLocal = (boolean) model.getValueAt(row, 4);
         }
     }
 
@@ -185,6 +184,9 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         } catch (Exception ex) {
             Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
+        parFileNames.repaint();
+        doneView.doneParFiles.repaint();
+        
     }
 
     public void UpdateListRemote() {
@@ -266,17 +268,11 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
 
     private void reloadParFiles() {
         File file = new File(baseDir.getAbsolutePath() + "/results.ser");
-
         try {
-
-            FileChannel channel = new RandomAccessFile(file, "rw").getChannel();
-
-            // Use the file channel to create a lock on the file.
-            // This method blocks until it can retrieve the lock.
-            FileLock lock = channel.lock();
+            FileInputStream streamIn = new FileInputStream(file);
             ObjectInputStream objectinputstream = null;
             try {
-                FileInputStream streamIn = new FileInputStream(file);
+                
                 objectinputstream = new ObjectInputStream(streamIn);
                 HashMap<String, ParFile> readCase = (HashMap<String, ParFile>) objectinputstream.readObject();
                 for (Map.Entry<String, ParFile> e : readCase.entrySet()) {
@@ -285,25 +281,27 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                         if (parfile.uploadDate < e.getValue().uploadDate) {
                             parFiles.put(e.getKey(), e.getValue());
                         }
+                        parfile.done=e.getValue().done||parfile.done;
                     } else {
                         parFiles.put(e.getKey(), e.getValue());
                     }
                 }
             } catch (Exception e) {
                 System.out.println("Failed to load old results");
+                System.out.println(e.toString());
             } finally {
                 if (objectinputstream != null) {
                     try {
                         objectinputstream.close();
+                        System.out.println("should have synced");
                     } catch (IOException ex) {
                         Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
-            if (lock != null) {
-                lock.release();
-            }
+           
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -311,15 +309,14 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         File file = new File(baseDir.getAbsolutePath() + "/results.ser");
         try {
 
-            FileChannel channel = new RandomAccessFile(file, "rw").getChannel();
 
             // Use the file channel to create a lock on the file.
             // This method blocks until it can retrieve the lock.
-            FileLock lock = channel.lock();
+            
+            FileOutputStream fout = new FileOutputStream(file);
+            FileLock lock = fout.getChannel().lock();
             ObjectOutputStream oos = null;
-            FileOutputStream fout = null;
             try {
-                fout = new FileOutputStream(file);
                 oos = new ObjectOutputStream(fout);
                 oos.writeObject(parFiles);
             } catch (Exception ex) {
@@ -329,6 +326,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                 if (oos != null) {
                     try {
                         oos.close();
+                        System.out.println("saved for synced");
                     } catch (IOException ex) {
                         Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
