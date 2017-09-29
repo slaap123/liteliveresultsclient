@@ -7,9 +7,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -134,7 +139,13 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         doneView = new DonePanel(pane, this);
 
         reloadParFiles();
+        Main.getWindow().addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                savePrefResults();
+            }
 
+        });
         unzip = new UnzipUtility();
         try {
             if (!AtletiekNuPanel.panel.test) {
@@ -173,10 +184,14 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         } catch (Exception ex) {
             Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
+        parFileNames.repaint();
+        doneView.doneParFiles.repaint();
+        
     }
 
     public void UpdateListRemote() {
         try {
+            reloadParFiles();
             loginHandler.getZip();
             unzip.unzip("tmp.zip", baseDir.getPath());
             new File("tmp.zip").delete();
@@ -204,7 +219,6 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         } catch (Exception ex) {
             Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     public void UpdateListFromLocal() {
@@ -253,47 +267,76 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     }
 
     private void reloadParFiles() {
-        
-        Main.getWindow().addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                ObjectOutputStream oos = null;
-                FileOutputStream fout = null;
-                try {
-                    fout = new FileOutputStream(baseDir.getAbsolutePath() + "/results.ser",false);
-                    oos = new ObjectOutputStream(fout);
-                    oos.writeObject(parFiles);
-                } catch (Exception ex) {
-                    System.out.println("Failed to write results");
-                    ex.printStackTrace();
-                } finally {
-                    if (oos != null) {
-                        try {
-                            oos.close();
-                        } catch (IOException ex) {
-                            Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+        File file = new File(baseDir.getAbsolutePath() + "/results.ser");
+        try {
+            FileInputStream streamIn = new FileInputStream(file);
+            ObjectInputStream objectinputstream = null;
+            try {
+                
+                objectinputstream = new ObjectInputStream(streamIn);
+                HashMap<String, ParFile> readCase = (HashMap<String, ParFile>) objectinputstream.readObject();
+                for (Map.Entry<String, ParFile> e : readCase.entrySet()) {
+                    if (parFiles.containsKey(e.getKey())) {
+                        ParFile parfile = parFiles.get(e.getKey());
+                        if (parfile.uploadDate < e.getValue().uploadDate) {
+                            parFiles.put(e.getKey(), e.getValue());
                         }
+                        parfile.done=e.getValue().done||parfile.done;
+                    } else {
+                        parFiles.put(e.getKey(), e.getValue());
                     }
                 }
-
-            }
-        });
-        ObjectInputStream objectinputstream = null;
-        try {
-            FileInputStream streamIn = new FileInputStream(baseDir.getAbsolutePath() + "/results.ser");
-            objectinputstream = new ObjectInputStream(streamIn);
-            HashMap<String, ParFile> readCase = (HashMap<String, ParFile>) objectinputstream.readObject();
-            parFiles = (readCase);
-        } catch (Exception e) {
-            System.out.println("Failed to load old results");
-        } finally {
-            if (objectinputstream != null) {
-                try {
-                    objectinputstream.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception e) {
+                System.out.println("Failed to load old results");
+                System.out.println(e.toString());
+            } finally {
+                if (objectinputstream != null) {
+                    try {
+                        objectinputstream.close();
+                        System.out.println("should have synced");
+                    } catch (IOException ex) {
+                        Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
+           
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void savePrefResults() {
+        File file = new File(baseDir.getAbsolutePath() + "/results.ser");
+        try {
+
+
+            // Use the file channel to create a lock on the file.
+            // This method blocks until it can retrieve the lock.
+            
+            FileOutputStream fout = new FileOutputStream(file);
+            FileLock lock = fout.getChannel().lock();
+            ObjectOutputStream oos = null;
+            try {
+                oos = new ObjectOutputStream(fout);
+                oos.writeObject(parFiles);
+            } catch (Exception ex) {
+                System.out.println("Failed to write results");
+                ex.printStackTrace();
+            } finally {
+                if (oos != null) {
+                    try {
+                        oos.close();
+                        System.out.println("saved for synced");
+                    } catch (IOException ex) {
+                        Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+            if (lock != null) {
+                lock.release();
+            }
+        } catch (Exception e) {
         }
     }
 

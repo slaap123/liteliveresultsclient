@@ -23,6 +23,7 @@ import java.net.CookieManager;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import nl.phanos.liteliveresultsclient.gui.Main;
 import org.apache.http.HttpEntity;
@@ -149,6 +150,7 @@ public class LoginHandler {
         if (obj != null) {
             for (Object FileObj : (JSONArray) obj.get("files")) {
                 JSONObject JSONFile = (JSONObject) FileObj;
+                files.get(i).uploadDate=Calendar.getInstance().getTimeInMillis();
                 files.get(i).UploadedAtleten=""+(Integer)JSONFile.get("totaalverwerkt");
                 AtletiekNuPanel.panel.addText("Uploaded " + JSONFile.get("name") + " met " + JSONFile.get("totaalverwerkt") + " atleten");
             }
