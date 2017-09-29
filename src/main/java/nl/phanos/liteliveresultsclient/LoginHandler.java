@@ -24,6 +24,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import nl.phanos.liteliveresultsclient.gui.Main;
 import org.apache.http.HttpEntity;
 
 import org.apache.http.HttpResponse;
@@ -61,9 +62,10 @@ public class LoginHandler {
         CookieHandler.setDefault(new CookieManager());
 
         String page = this.GetPageContent(url);
-
+        String user=Main.getWindow().UserName;
+        String pass=Main.getWindow().Pass;
         List<NameValuePair> postParams
-                = this.getFormParams(page, "phanosit@gmail.com", "2D400box");
+                = this.getFormParams(page, user, pass);
         this.sendPost(url, postParams);
     }
     public static boolean isReachable() {

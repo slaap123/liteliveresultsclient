@@ -1,5 +1,6 @@
 package nl.phanos.liteliveresultsclient;
 
+import java.io.BufferedReader;
 import nl.phanos.liteliveresultsclient.classes.ParFile;
 import nl.phanos.liteliveresultsclient.gui.Main;
 import java.io.File;
@@ -50,6 +51,7 @@ public class ResultsHandler extends Thread {
                         if (parFile != null) {
                             parFile.foundResult = true;
                             if ((parFile.done && parFile.resultSize != fileEntry.length())||parFile.forceUpload) {
+                                checkHeaderInfo(fileEntry,parFile);
                                 parFile.forceUpload=false;
                                 parFile.resultSize = fileEntry.length();
                                 parFile.resultFile = fileEntry;
@@ -89,4 +91,64 @@ public class ResultsHandler extends Thread {
         }
     }
     private static final String NO_INTERNET_CONNECTION_WAITING_10_SECONDS = "No internet connection!!!";
+
+    private void checkHeaderInfo(File file,ParFile parFile) {
+        String content = null;
+        FileReader reader = null;
+        try {
+            reader = new FileReader(file);
+            char[] chars = new char[(int) file.length()];
+            reader.read(chars);
+            content = new String(chars);
+            reader.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ParFile.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(ParFile.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        ArrayList<String> lines = new ArrayList<String>(Arrays.asList(content.split("\n")));
+        lines = CheckResultsFile(file, parFile, lines);
+        
+    }
+    private ArrayList<String> CheckResultsFile(File file, ParFile parFile, ArrayList<String> lines) {
+        
+        if (!lines.get(1).startsWith("#")) {
+            System.out.println("addHeaderINFO!!!!");
+            ArrayList<String> newLines = new ArrayList<String>();
+            newLines.addAll(lines);
+            newLines.addAll(1, parFile.getHeaderInfo());
+            FileWriter writer = null;
+
+            try {
+                writer = new FileWriter(file.getAbsolutePath());
+                for (int i = 0; i < newLines.size(); i++) {
+                    if (i > 0) {
+                        writer.append(System.getProperty("line.separator"));
+                    }
+                    writer.append(newLines.get(i));
+                }
+                writer.flush();
+                writer.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ResultsHandler.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(ResultsHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            file = new File(file.getAbsolutePath());
+            parFile.resultSize = file.length();
+            lines = newLines;
+        }
+        return lines;
+    }
 }

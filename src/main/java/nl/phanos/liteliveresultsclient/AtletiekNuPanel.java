@@ -159,7 +159,6 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
             String name = (String) model.getValueAt(row, 0);
             ParFile entry = parFiles.get(name);
             entry.done = (boolean) model.getValueAt(row, 3);
-            entry.keepLocal = (boolean) model.getValueAt(row, 4);
         }
     }
 

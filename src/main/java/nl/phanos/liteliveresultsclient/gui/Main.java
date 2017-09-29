@@ -5,9 +5,17 @@
  */
 package nl.phanos.liteliveresultsclient.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.awt.GridLayout;
+import java.util.Hashtable;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import nl.phanos.liteliveresultsclient.*;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import nl.phanos.liteliveresultsclient.AtletiekNuPanel;
 /**
  *
@@ -23,6 +31,8 @@ public class Main extends javax.swing.JFrame {
         }
         return null;
     }
+    public String UserName="";
+    public String Pass="";
     
     /**
      * Creates new form MainWindow
@@ -31,6 +41,7 @@ public class Main extends javax.swing.JFrame {
         window=this;
         initComponents();
         String s;
+        login(this);
         do{
                 s = (String)JOptionPane.showInputDialog(
                     this,
@@ -113,6 +124,28 @@ public class Main extends javax.swing.JFrame {
         });
     }
 
+    public void login(JFrame frame) {
+
+    JPanel panel = new JPanel(new BorderLayout(5, 5));
+
+    JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+    label.add(new JLabel("E-Mail", SwingConstants.RIGHT));
+    label.add(new JLabel("Password", SwingConstants.RIGHT));
+    panel.add(label, BorderLayout.WEST);
+
+    JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+    JTextField username = new JTextField();
+    controls.add(username);
+    JPasswordField password = new JPasswordField();
+    controls.add(password);
+    panel.add(controls, BorderLayout.CENTER);
+
+    JOptionPane.showMessageDialog(frame, panel, "login", JOptionPane.QUESTION_MESSAGE);
+    
+    this.UserName= username.getText();
+    this.Pass=new String(password.getPassword());
+    
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
