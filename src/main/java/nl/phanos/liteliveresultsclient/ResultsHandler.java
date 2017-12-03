@@ -53,8 +53,7 @@ public class ResultsHandler extends Thread {
                             if ((parFile.done && parFile.resultSize != fileEntry.length())||parFile.forceUpload) {
                                 checkHeaderInfo(fileEntry,parFile);
                                 parFile.forceUpload=false;
-                                parFile.resultSize = fileEntry.length();
-                                parFile.resultFile = fileEntry;
+                                parFile.setResults(fileEntry);
                                 parFile.gotResults = true;
                                 files.add(parFile);
                                 System.out.println("addPar:"+parFile.fileName);

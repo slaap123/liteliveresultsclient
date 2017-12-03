@@ -25,7 +25,9 @@ public class ParFileEntry implements java.io.Serializable, Comparable<ParFileEnt
         startnummer=params[0];
         baan=params[1];
         naam=params[2];
-        info=params[3];
+        if(params.length>3){
+            info=params[3];
+        }
         }catch(ArrayIndexOutOfBoundsException ex){
             System.out.println(Arrays.toString(params));
             Logger.getLogger(ParFile.class.getName()).log(Level.SEVERE, null, ex);

@@ -36,8 +36,7 @@ public class ParFile implements java.io.Serializable {
     public String fileName;
     public HashMap<Integer,ParFileEntry> atleten = new HashMap();
     public boolean gotResults=false;
-    public Long resultSize=-1L;
-    public File resultFile=null;
+    public ResultFile results=null;
     public boolean done=false;
     public boolean forceUpload=false;
     public boolean foundResult=false;
@@ -45,6 +44,8 @@ public class ParFile implements java.io.Serializable {
     public boolean keepLocal=false;
     public long uploadDate=0;
     
+    public Long resultSize=-1L;
+    public File resultFile=null;
 
     public ParFile() {
 
@@ -119,5 +120,12 @@ public class ParFile implements java.io.Serializable {
         lines.add("# onderdeel:\t"+onderdeel);
         lines.add("# serie:\t\t"+serie);
         return lines;
+    }
+
+    public void setResults(File file) {
+        
+        resultSize = file.length();
+        resultFile=file;
+        results=new ResultFile(file,this);
     }
 }
