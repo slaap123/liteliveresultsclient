@@ -54,6 +54,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     private File baseDir;
     public final static boolean test = false;
     public final static boolean live = false;
+    public boolean slave = false;
     public HashMap<String, ParFile> parFiles = new HashMap<String, ParFile>();
 
     public static AtletiekNuPanel panel;
@@ -186,7 +187,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         }
         parFileNames.repaint();
         doneView.doneParFiles.repaint();
-        
+
     }
 
     public void UpdateListRemote() {
@@ -208,9 +209,9 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                     }
                     //System.out.println("GotResults:" + entry.gotResults);
                     if (!entry.gotResults) {
-                        ((DefaultTableModel) parFileNames.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie+"("+entry.atleten.size()+")", entry.done});
+                        ((DefaultTableModel) parFileNames.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie + "(" + entry.atleten.size() + ")", entry.done});
                     } else {
-                        ((DefaultTableModel) doneView.doneParFiles.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie+"("+entry.atleten.size()+")", entry.UploadedAtleten, entry.forceUpload});
+                        ((DefaultTableModel) doneView.doneParFiles.getModel()).addRow(new Object[]{entry.fileName, entry.onderdeel + " " + entry.startgroep, entry.serie + "(" + entry.atleten.size() + ")", entry.UploadedAtleten, entry.forceUpload});
                     }
                     parFiles.put(fileEntry.getName(), entry);
                 }
@@ -272,7 +273,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
             FileInputStream streamIn = new FileInputStream(file);
             ObjectInputStream objectinputstream = null;
             try {
-                
+
                 objectinputstream = new ObjectInputStream(streamIn);
                 HashMap<String, ParFile> readCase = (HashMap<String, ParFile>) objectinputstream.readObject();
                 for (Map.Entry<String, ParFile> e : readCase.entrySet()) {
@@ -282,12 +283,12 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                             parFiles.put(e.getKey(), e.getValue());
                             System.out.println("newer results");
                         }
-                        parfile.done=e.getValue().done||parfile.done;
+                        parfile.done = e.getValue().done || parfile.done;
                     } else {
                         System.out.println("new result");
                         parFiles.put(e.getKey(), e.getValue());
                     }
-                    if(Main.getWindow().resultsWindow!=null&&e.getValue().uploadDate>Main.getWindow().resultsWindow.currentDisplayDate){
+                    if (Main.getWindow().resultsWindow != null && e.getValue().uploadDate > Main.getWindow().resultsWindow.currentDisplayDate) {
                         System.out.println("new result for sb");
                         Main.getWindow().resultsWindow.setSerieResults(parFiles.get(e.getKey()).results);
                     }
@@ -305,44 +306,44 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                     }
                 }
             }
-           
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void savePrefResults() {
-        File file = new File(baseDir.getAbsolutePath() + "/results.ser");
-        try {
-
-
-            // Use the file channel to create a lock on the file.
-            // This method blocks until it can retrieve the lock.
-            
-            FileOutputStream fout = new FileOutputStream(file);
-            FileLock lock = fout.getChannel().lock();
-            ObjectOutputStream oos = null;
+        if (!slave) {
+            File file = new File(baseDir.getAbsolutePath() + "/results.ser");
             try {
-                oos = new ObjectOutputStream(fout);
-                oos.writeObject(parFiles);
-            } catch (Exception ex) {
-                System.out.println("Failed to write results");
-                ex.printStackTrace();
-            } finally {
-                if (oos != null) {
-                    try {
-                        oos.close();
-                        System.out.println("saved for synced");
-                    } catch (IOException ex) {
-                        Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+
+                // Use the file channel to create a lock on the file.
+                // This method blocks until it can retrieve the lock.
+                FileOutputStream fout = new FileOutputStream(file);
+                FileLock lock = fout.getChannel().lock();
+                ObjectOutputStream oos = null;
+                try {
+                    oos = new ObjectOutputStream(fout);
+                    oos.writeObject(parFiles);
+                } catch (Exception ex) {
+                    System.out.println("Failed to write results");
+                    ex.printStackTrace();
+                } finally {
+                    if (oos != null) {
+                        try {
+                            oos.close();
+                            System.out.println("saved for synced");
+                        } catch (IOException ex) {
+                            Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
-            }
 
-            if (lock != null) {
-                lock.release();
+                if (lock != null) {
+                    lock.release();
+                }
+            } catch (Exception e) {
             }
-        } catch (Exception e) {
         }
     }
 

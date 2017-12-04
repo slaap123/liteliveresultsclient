@@ -40,7 +40,6 @@ public class ResultsWindows extends javax.swing.JFrame {
     //this window fullscreen.
     private GraphicsDevice device = null;
 
-
     //the original resolution before our program is run.
     private DisplayMode dispModeOld = null;
 
@@ -64,10 +63,10 @@ public class ResultsWindows extends javax.swing.JFrame {
             method.invoke(util, this, true);
         } catch (Exception e) {
             System.out.println("OS X Fullscreen FAIL" + e.toString());
-        jMenu1.setEnabled(true);
+            jMenu1.setEnabled(true);
         }
         initComponents();
-        if(!jMenu1.isEnabled()){
+        if (!jMenu1.isEnabled()) {
             jMenuBar1.removeAll();
         }
         initCustumComponents();
@@ -205,7 +204,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         TableColumnModel jTableColumnModel = jTable1.getColumnModel();
         int cantCols = jTableColumnModel.getColumnCount();
         if (jTable1.getModel().getColumnCount() > 0) {
-            jTableColumnModel.getColumn(0).setPreferredWidth(tW-201-295);
+            jTableColumnModel.getColumn(0).setPreferredWidth(tW - 201 - 295);
             jTableColumnModel.getColumn(1).setPreferredWidth(201);
             jTableColumnModel.getColumn(2).setPreferredWidth(295);
         }
@@ -222,7 +221,6 @@ public class ResultsWindows extends javax.swing.JFrame {
             //set the display mode back to the what it was when
             //the program was launched.
             //device.setDisplayMode(dispModeOld);
-
             //hide the frame so we can change it.
             setVisible(false);
 
@@ -260,7 +258,6 @@ public class ResultsWindows extends javax.swing.JFrame {
 
             //attempt to change the screen resolution.
             //device.setDisplayMode(dispMode);
-
             //show the frame
             setVisible(true);
 

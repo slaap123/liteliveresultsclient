@@ -50,20 +50,20 @@ public class ResultsHandler extends Thread {
                         ParFile parFile = AtletiekNuPanel.panel.parFiles.get(fileEntry.getName().replace("txt", "par"));
                         if (parFile != null) {
                             parFile.foundResult = true;
-                            if ((parFile.done && parFile.resultSize != fileEntry.length())||parFile.forceUpload) {
-                                checkHeaderInfo(fileEntry,parFile);
-                                parFile.forceUpload=false;
+                            if ((parFile.done && parFile.resultSize != fileEntry.length()) || parFile.forceUpload) {
+                                checkHeaderInfo(fileEntry, parFile);
+                                parFile.forceUpload = false;
                                 parFile.setResults(fileEntry);
                                 parFile.gotResults = true;
                                 files.add(parFile);
-                                System.out.println("addPar:"+parFile.fileName);
+                                System.out.println("addPar:" + parFile.fileName);
                             }
                         }
                     }
                 }
                 try {
-                    System.out.println("files:"+ files.size());
-                    System.out.println(AtletiekNuPanel.panel.live?"true":"false");
+                    System.out.println("files:" + files.size());
+                    System.out.println(AtletiekNuPanel.panel.live ? "true" : "false");
                     if (AtletiekNuPanel.panel.live && files.size() > 0) {
                         ((AtletiekNuPanel) AtletiekNuPanel.panel).loginHandler.submitResults(files);
                         System.out.println("upload");
@@ -78,7 +78,7 @@ public class ResultsHandler extends Thread {
                 System.out.println("end reading");
                 //if(!ResultsPanel.panel.test){
                 //}
-            }else{
+            } else {
                 AtletiekNuPanel.panel.addText(NO_INTERNET_CONNECTION_WAITING_10_SECONDS);
             }
             AtletiekNuPanel.panel.savePrefResults();
@@ -92,7 +92,7 @@ public class ResultsHandler extends Thread {
     }
     private static final String NO_INTERNET_CONNECTION_WAITING_10_SECONDS = "No internet connection!!!";
 
-    private void checkHeaderInfo(File file,ParFile parFile) {
+    private void checkHeaderInfo(File file, ParFile parFile) {
         String content = null;
         FileReader reader = null;
         try {
@@ -114,10 +114,11 @@ public class ResultsHandler extends Thread {
         }
         ArrayList<String> lines = new ArrayList<String>(Arrays.asList(content.split("\n")));
         lines = CheckResultsFile(file, parFile, lines);
-        
+
     }
+
     private ArrayList<String> CheckResultsFile(File file, ParFile parFile, ArrayList<String> lines) {
-        
+
         if (!lines.get(1).startsWith("#")) {
             System.out.println("addHeaderINFO!!!!");
             ArrayList<String> newLines = new ArrayList<String>();

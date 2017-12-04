@@ -46,10 +46,10 @@ public class ResultFile implements java.io.Serializable {
         }
         String[] lines = content.split("\n");
         wind = lines[0].split("\t")[1];
-        if(wind.startsWith("N/A")){
-            wind="";
-        }else{
-            wind=" W :"+wind.split(":")[1];
+        if (wind.startsWith("N/A")) {
+            wind = "";
+        } else {
+            wind = " W :" + wind.split(":")[1];
         }
         int lI = 1;
         while (!lines[lI].startsWith("Place")) {
@@ -65,7 +65,7 @@ public class ResultFile implements java.io.Serializable {
             }
             lI++;
         }
-        if(Main.getWindow().resultsWindow!=null){
+        if (Main.getWindow().resultsWindow != null) {
             Main.getWindow().resultsWindow.setSerieResults(this);
         }
     }
