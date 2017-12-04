@@ -36,6 +36,11 @@
             <version>1.10.1</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>2.5.2</version>
+        </dependency>
     </dependencies>
     <properties>
         <mainClass>nl.phanos.liteliveresultsclient.gui.Main</mainClass>
