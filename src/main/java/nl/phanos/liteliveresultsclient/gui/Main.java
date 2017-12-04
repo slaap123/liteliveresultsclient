@@ -145,6 +145,8 @@ public class Main extends javax.swing.JFrame {
          /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
                 mainObj = new Main();
                 mainObj.setVisible(true);
             }
