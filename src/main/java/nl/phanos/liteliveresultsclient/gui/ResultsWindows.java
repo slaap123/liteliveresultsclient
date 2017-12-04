@@ -26,7 +26,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import jmapps.jmstudio.AboutDialog;
 import nl.phanos.liteliveresultsclient.classes.*;
 
 /**
@@ -113,6 +112,11 @@ public class ResultsWindows extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jTable1MouseMoved(evt);
+            }
+        });
         jTable1.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 jTable1ComponentResized(evt);
@@ -269,6 +273,11 @@ public class ResultsWindows extends javax.swing.JFrame {
         //make sure that the screen is refreshed.
         repaint();
     }//GEN-LAST:event_jMenu1MenuSelected
+
+    private void jTable1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseMoved
+        // TODO add your handling code here:
+        jMenuBar1.setVisible(evt.getY() < 50);
+    }//GEN-LAST:event_jTable1MouseMoved
     public void setSerieResults() {
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{"jan test", 1, 10.23});
