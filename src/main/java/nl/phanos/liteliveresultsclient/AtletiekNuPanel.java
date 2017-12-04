@@ -53,7 +53,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     private String nuid;
     private File baseDir;
     public final static boolean test = false;
-    public final static boolean live = true;
+    public final static boolean live = false;
     public HashMap<String, ParFile> parFiles = new HashMap<String, ParFile>();
 
     public static AtletiekNuPanel panel;
@@ -280,10 +280,16 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                         ParFile parfile = parFiles.get(e.getKey());
                         if (parfile.uploadDate < e.getValue().uploadDate) {
                             parFiles.put(e.getKey(), e.getValue());
+                            System.out.println("newer results");
                         }
                         parfile.done=e.getValue().done||parfile.done;
                     } else {
+                        System.out.println("new result");
                         parFiles.put(e.getKey(), e.getValue());
+                    }
+                    if(Main.getWindow().resultsWindow!=null&&e.getValue().uploadDate>Main.getWindow().resultsWindow.currentDisplayDate){
+                        System.out.println("new result for sb");
+                        Main.getWindow().resultsWindow.setSerieResults(parFiles.get(e.getKey()).results);
                     }
                 }
             } catch (Exception e) {

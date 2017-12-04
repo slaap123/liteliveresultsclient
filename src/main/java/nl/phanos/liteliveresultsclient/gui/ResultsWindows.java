@@ -7,6 +7,7 @@ package nl.phanos.liteliveresultsclient.gui;
 
 import java.awt.Color;
 import java.awt.Label;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
@@ -25,7 +26,7 @@ import nl.phanos.liteliveresultsclient.classes.*;
  * @author woutermkievit
  */
 public class ResultsWindows extends javax.swing.JFrame {
-
+    public long currentDisplayDate=0;
     /**
      * Creates new form ResultsWindows
      */
@@ -166,6 +167,7 @@ public class ResultsWindows extends javax.swing.JFrame {
 
     public void setSerieResults(ResultFile resultFile) {
         SerieLabel.setText(resultFile.BelongsTo.onderdeel + " Serie " + resultFile.BelongsTo.serie + " " + resultFile.wind);
+        currentDisplayDate=resultFile.BelongsTo.uploadDate;
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         for (ResultFileEntry entry : resultFile.atleten.values()) {
             ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.naam, entry.baan, entry.tijd});
