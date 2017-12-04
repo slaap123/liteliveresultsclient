@@ -109,6 +109,7 @@
                 </Property>
               </Properties>
               <Events>
+                <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="jTable1MouseMoved"/>
                 <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="jTable1ComponentResized"/>
               </Events>
             </Component>
