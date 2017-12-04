@@ -6,11 +6,19 @@
 package nl.phanos.liteliveresultsclient.gui;
 
 import java.awt.Color;
+import java.awt.DisplayMode;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Label;
+import java.awt.Window;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -26,15 +34,45 @@ import nl.phanos.liteliveresultsclient.classes.*;
  * @author woutermkievit
  */
 public class ResultsWindows extends javax.swing.JFrame {
-    public long currentDisplayDate=0;
+
+    public long currentDisplayDate = 0;
+    //a reference to the GraphicsDevice for changing resolution and making 
+    //this window fullscreen.
+    private GraphicsDevice device = null;
+
+
+    //the original resolution before our program is run.
+    private DisplayMode dispModeOld = null;
+
+    //variable used to toggle between windowed and fullscreen.
+    protected boolean fullscreen = false;
+
     /**
      * Creates new form ResultsWindows
      */
     public ResultsWindows() {
+        super();
+        //get a reference to the device.
+        GraphicsDevice[] ScreenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        this.device = ScreenDevices[ScreenDevices.length - 1];
+        //save the old display mode before changing it.
+        dispModeOld = device.getDisplayMode();
+        try {
+            Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
+            Class params[] = new Class[]{Window.class, Boolean.TYPE};
+            Method method = util.getMethod("setWindowCanFullScreen", params);
+            method.invoke(util, this, true);
+        } catch (Exception e) {
+            System.out.println("OS X Fullscreen FAIL" + e.toString());
+        jMenu1.setEnabled(true);
+        }
         initComponents();
+        if(!jMenu1.isEnabled()){
+            jMenuBar1.removeAll();
+        }
         initCustumComponents();
         setSerieResults();
-        com.apple.eawt.FullScreenUtilities.setWindowCanFullScreen(this, true);
+
     }
 
     /**
@@ -51,6 +89,8 @@ public class ResultsWindows extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         SerieLabel = new java.awt.Label();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -117,8 +157,23 @@ public class ResultsWindows extends javax.swing.JFrame {
             .addGroup(LayerdPaneLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))
         );
+
+        jMenu1.setText("FullScreen");
+        jMenu1.setEnabled(false);
+        jMenu1.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                jMenu1MenuSelected(evt);
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+        });
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -144,22 +199,76 @@ public class ResultsWindows extends javax.swing.JFrame {
                 icon.getIconHeight());
     }//GEN-LAST:event_formComponentResized
 
-//SUMS 100%
-    float[] columnWidthPercentage = {75.0f, 10.0f, 15.0f,};
     private void jTable1ComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jTable1ComponentResized
         // TODO add your handling code here:
         int tW = jTable1.getWidth();
-        TableColumn column;
         TableColumnModel jTableColumnModel = jTable1.getColumnModel();
         int cantCols = jTableColumnModel.getColumnCount();
         if (jTable1.getModel().getColumnCount() > 0) {
-            for (int i = 0; i < cantCols; i++) {
-                column = jTableColumnModel.getColumn(i);
-                int pWidth = Math.round(columnWidthPercentage[i] * tW);
-                column.setPreferredWidth(pWidth);
-            }
+            jTableColumnModel.getColumn(0).setPreferredWidth(tW-201-295);
+            jTableColumnModel.getColumn(1).setPreferredWidth(201);
+            jTableColumnModel.getColumn(2).setPreferredWidth(295);
         }
     }//GEN-LAST:event_jTable1ComponentResized
+
+    private void jMenu1MenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_jMenu1MenuSelected
+
+        //change modes.
+        this.fullscreen = !this.fullscreen;
+
+        // toggle fullscreen mode
+        if (!fullscreen) { //change to windowed mode.
+
+            //set the display mode back to the what it was when
+            //the program was launched.
+            //device.setDisplayMode(dispModeOld);
+
+            //hide the frame so we can change it.
+            setVisible(false);
+
+            //remove the frame from being displayable.
+            dispose();
+
+            //put the borders back on the frame.
+            setUndecorated(false);
+
+            //needed to unset this window as the fullscreen window.
+            device.setFullScreenWindow(null);
+
+            //make sure the size of the window is correct.
+            setSize(800, 600);
+
+            //recenter window
+            setLocationRelativeTo(null);
+
+            //reset the display mode to what it was before 
+            //we changed it.
+            setVisible(true);
+
+        } else { //change to fullscreen.
+            //hide everything
+            setVisible(false);
+
+            //remove the frame from being displayable.
+            dispose();
+
+            //remove borders around the frame
+            setUndecorated(true);
+
+            //make the window fullscreen.
+            device.setFullScreenWindow(this);
+
+            //attempt to change the screen resolution.
+            //device.setDisplayMode(dispMode);
+
+            //show the frame
+            setVisible(true);
+
+        } // end if
+
+        //make sure that the screen is refreshed.
+        repaint();
+    }//GEN-LAST:event_jMenu1MenuSelected
     public void setSerieResults() {
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{"jan test", 1, 10.23});
@@ -167,7 +276,7 @@ public class ResultsWindows extends javax.swing.JFrame {
 
     public void setSerieResults(ResultFile resultFile) {
         SerieLabel.setText(resultFile.BelongsTo.onderdeel + " Serie " + resultFile.BelongsTo.serie + " " + resultFile.wind);
-        currentDisplayDate=resultFile.BelongsTo.uploadDate;
+        currentDisplayDate = resultFile.BelongsTo.uploadDate;
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         for (ResultFileEntry entry : resultFile.atleten.values()) {
             ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.naam, entry.baan, entry.tijd});
@@ -228,44 +337,12 @@ public class ResultsWindows extends javax.swing.JFrame {
         }
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(ResultsWindows.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(ResultsWindows.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(ResultsWindows.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(ResultsWindows.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ResultsWindows().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLayeredPane LayerdPane;
     private java.awt.Label SerieLabel;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
