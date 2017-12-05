@@ -55,16 +55,17 @@ public class ResultsWindows extends javax.swing.JFrame {
         this.device = ScreenDevices[ScreenDevices.length - 1];
         //save the old display mode before changing it.
         dispModeOld = device.getDisplayMode();
+        
+        initComponents();
         try {
             Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
             Class params[] = new Class[]{Window.class, Boolean.TYPE};
             Method method = util.getMethod("setWindowCanFullScreen", params);
             method.invoke(util, this, true);
         } catch (Exception e) {
-            System.out.println("OS X Fullscreen FAIL" + e.toString());
+            //System.out.println("OS X Fullscreen FAIL" + e.toString());
             jMenu1.setEnabled(true);
         }
-        initComponents();
         if (!jMenu1.isEnabled()) {
             jMenuBar1.removeAll();
         }
@@ -299,7 +300,7 @@ public class ResultsWindows extends javax.swing.JFrame {
                 icon.getIconWidth(),
                 icon.getIconHeight());
         LayerdPane.add(logoLabel, JLayeredPane.PALETTE_LAYER);
-
+        jTable1.setRowSelectionAllowed(false);
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{

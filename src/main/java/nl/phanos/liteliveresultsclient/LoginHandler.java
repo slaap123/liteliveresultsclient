@@ -102,7 +102,7 @@ public class LoginHandler {
         int responseCode = response.getStatusLine().getStatusCode();
 
         System.out.println("Response Code : " + responseCode);
-        System.out.println(convertStreamToString(response.getEntity().getContent())); 
+        //System.out.println(convertStreamToString(response.getEntity().getContent())); 
         BufferedInputStream bis = new BufferedInputStream(response.getEntity().getContent());
         String filePath = "tmp.zip";
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
@@ -197,7 +197,7 @@ public class LoginHandler {
             result.append(line);
         }
         post.releaseConnection();
-        System.out.println(result.toString());
+        //System.out.println(result.toString());
         return result.toString();
 
     }
