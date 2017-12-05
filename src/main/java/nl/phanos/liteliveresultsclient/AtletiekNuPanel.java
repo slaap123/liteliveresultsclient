@@ -8,9 +8,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,9 +198,11 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     public void UpdateListRemote() {
         try {
             reloadParFiles();
-            loginHandler.getZip();
-            unzip.unzip("tmp.zip", baseDir.getPath());
-            new File("tmp.zip").delete();
+            if (!slave) {
+                loginHandler.getZip();
+                unzip.unzip("tmp.zip", baseDir.getPath());
+                new File("tmp.zip").delete();
+            }
             ((DefaultTableModel) parFileNames.getModel()).setRowCount(0);
             ((DefaultTableModel) doneView.doneParFiles.getModel()).setRowCount(0);
             for (File fileEntry : baseDir.listFiles()) {
@@ -268,7 +275,20 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     }
 
     private void reloadParFiles() {
-        File file = new File(baseDir.getAbsolutePath() + "/results.ser");
+        if (slave) {
+            File file = new File(baseDir.getAbsolutePath() + "/results.ser");
+            readSerialized(file);
+        } else {
+            File[] files = new File(baseDir.getAbsolutePath()).listFiles();
+            for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".ser")) {
+                    readSerialized(file);
+                }
+            }
+        }
+    }
+
+    public void readSerialized(File file) {
         try {
             FileInputStream streamIn = new FileInputStream(file);
             ObjectInputStream objectinputstream = null;
@@ -313,37 +333,56 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     }
 
     public void savePrefResults() {
-        if (!slave) {
-            File file = new File(baseDir.getAbsolutePath() + "/results.ser");
+        String key = "";
+        if (slave) {
             try {
+                InetAddress ip = InetAddress.getLocalHost();
 
-                // Use the file channel to create a lock on the file.
-                // This method blocks until it can retrieve the lock.
-                FileOutputStream fout = new FileOutputStream(file);
-                FileLock lock = fout.getChannel().lock();
-                ObjectOutputStream oos = null;
-                try {
-                    oos = new ObjectOutputStream(fout);
-                    oos.writeObject(parFiles);
-                } catch (Exception ex) {
-                    System.out.println("Failed to write results");
-                    ex.printStackTrace();
-                } finally {
-                    if (oos != null) {
-                        try {
-                            oos.close();
-                            System.out.println("saved for synced");
-                        } catch (IOException ex) {
-                            Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+
+                byte[] mac = network.getHardwareAddress();
+                StringBuilder sb = new StringBuilder();
+                for (byte b : mac) {
+                    sb.append(String.format("%02X", b));
+                }
+                key = new String(sb.toString());
+            } catch (SocketException ex) {
+                System.out.println("error");
+                Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnknownHostException ex) {
+                System.out.println("error");
+                Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        File file = new File(baseDir.getAbsolutePath() + "/results" + key + ".ser");
+        try {
+
+            // Use the file channel to create a lock on the file.
+            // This method blocks until it can retrieve the lock.
+            FileOutputStream fout = new FileOutputStream(file);
+            FileLock lock = fout.getChannel().lock();
+            ObjectOutputStream oos = null;
+            try {
+                oos = new ObjectOutputStream(fout);
+                oos.writeObject(parFiles);
+            } catch (Exception ex) {
+                System.out.println("Failed to write results");
+                ex.printStackTrace();
+            } finally {
+                if (oos != null) {
+                    try {
+                        oos.close();
+                        System.out.println("saved for synced");
+                    } catch (IOException ex) {
+                        Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-
-                if (lock != null) {
-                    lock.release();
-                }
-            } catch (Exception e) {
             }
+
+            if (lock != null) {
+                lock.release();
+            }
+        } catch (Exception e) {
         }
     }
 
