@@ -274,7 +274,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         jTextPane1.setText(newText.substring(Math.min(1, newText.length())));
     }
 
-    private void reloadParFiles() {
+    public void reloadParFiles() {
         if (slave) {
             File file = new File(baseDir.getAbsolutePath() + "/results.ser");
             readSerialized(file);

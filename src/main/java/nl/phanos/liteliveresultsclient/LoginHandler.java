@@ -16,7 +16,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -47,6 +49,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import sun.misc.IOUtils;
 
 public class LoginHandler {
 
@@ -81,6 +84,10 @@ public class LoginHandler {
         return false;
     }
     }
+    static String convertStreamToString(java.io.InputStream is) {
+    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+    return s.hasNext() ? s.next() : "";
+}
     public void getZip() throws Exception {
         String url = "https://www.atletiek.nu/feeder.php?page=exportstartlijstentimetronics&event_id=" + nuid + "&forceAlleenGeprinteLijsten=1";
         System.out.println(url);
@@ -95,7 +102,7 @@ public class LoginHandler {
         int responseCode = response.getStatusLine().getStatusCode();
 
         System.out.println("Response Code : " + responseCode);
-
+        System.out.println(convertStreamToString(response.getEntity().getContent())); 
         BufferedInputStream bis = new BufferedInputStream(response.getEntity().getContent());
         String filePath = "tmp.zip";
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
@@ -190,8 +197,8 @@ public class LoginHandler {
             result.append(line);
         }
         post.releaseConnection();
+        System.out.println(result.toString());
         return result.toString();
-        //System.out.println(result.toString());
 
     }
 

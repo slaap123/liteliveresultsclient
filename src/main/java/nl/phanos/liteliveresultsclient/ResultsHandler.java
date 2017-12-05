@@ -38,7 +38,9 @@ public class ResultsHandler extends Thread {
     public ResultsHandler(File dir) {
         this.dir = dir;
     }
-
+    
+    int downladerCounter=0;
+    
     @Override
     public void run() {
         while (true) {
@@ -73,8 +75,13 @@ public class ResultsHandler extends Thread {
                     System.out.println("failed to upload");
                     Logger.getLogger(ResultsHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-                AtletiekNuPanel.panel.UpdateList();
+                downladerCounter++;
+                if(downladerCounter%10==0){
+                    AtletiekNuPanel.panel.UpdateList();
+                    downladerCounter=0;
+                }else{
+                    AtletiekNuPanel.panel.reloadParFiles();
+                }
                 System.out.println("end reading");
                 //if(!ResultsPanel.panel.test){
                 //}
@@ -83,7 +90,7 @@ public class ResultsHandler extends Thread {
             }
             AtletiekNuPanel.panel.savePrefResults();
             try {
-                sleep(10000);
+                sleep(1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(ResultsHandler.class.getName()).log(Level.SEVERE, null, ex);
             }

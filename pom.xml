@@ -41,6 +41,11 @@
             <artifactId>eclipselink</artifactId>
             <version>2.5.2</version>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>2.28</version>
+        </dependency>
     </dependencies>
     <properties>
         <mainClass>nl.phanos.liteliveresultsclient.gui.Main</mainClass>

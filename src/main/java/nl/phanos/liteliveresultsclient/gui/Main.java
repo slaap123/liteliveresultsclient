@@ -5,10 +5,19 @@
  */
 package nl.phanos.liteliveresultsclient.gui;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -189,25 +198,28 @@ public class Main extends javax.swing.JFrame {
     }
 
     public void login(JFrame frame) {
-
-        JPanel panel = new JPanel(new BorderLayout(5, 5));
-
-        JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-        label.add(new JLabel("E-Mail", SwingConstants.RIGHT));
-        label.add(new JLabel("Password", SwingConstants.RIGHT));
-        panel.add(label, BorderLayout.WEST);
-
-        JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
-        JTextField username = new JTextField();
-        controls.add(username);
-        JPasswordField password = new JPasswordField();
-        controls.add(password);
-        panel.add(controls, BorderLayout.CENTER);
-
-        JOptionPane.showMessageDialog(frame, panel, "login", JOptionPane.QUESTION_MESSAGE);
-
-        this.UserName = username.getText();
-        this.Pass = new String(password.getPassword());
+        
+            
+            JPanel panel = new JPanel(new BorderLayout(5, 5));
+            JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+            label.add(new JLabel("E-Mail", SwingConstants.RIGHT));
+            label.add(new JLabel("Password", SwingConstants.RIGHT));
+            panel.add(label, BorderLayout.WEST);
+            
+            JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+            JTextField username = new JTextField();
+            controls.add(username);
+            JPasswordField password = new JPasswordField();
+            controls.add(password);
+            panel.add(controls, BorderLayout.CENTER);
+            
+            Rectangle bounds = panel.getBounds();
+            panel.setPreferredSize(new Dimension(400,panel.getPreferredSize().height));
+            JOptionPane.showMessageDialog(frame, panel, "login", JOptionPane.QUESTION_MESSAGE);
+            
+            this.UserName = username.getText();
+            this.Pass = new String(password.getPassword());
+       
 
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
