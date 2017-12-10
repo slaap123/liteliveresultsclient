@@ -15,6 +15,8 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +28,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import nl.phanos.liteliveresultsclient.AtletiekNuPanel;
+import nl.phanos.liteliveresultsclient.LoginHandler;
+import nl.phanos.liteliveresultsclient.classes.Wedstrijd;
 
 /**
  *
@@ -52,24 +56,32 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         window = this;
         initComponents();
-        String s;
+        initCustomParts();
+        Object s;
         login(this);
+        Object[] wedstrijden=null;
+        try {
+            LoginHandler handler = LoginHandler.get();
+            wedstrijden=handler.getEigenWedstrijden();
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
         do {
-            s = (String) JOptionPane.showInputDialog(
+            s =  JOptionPane.showInputDialog(
                     this,
                     "Geef de atletiek.nu wedstrijd id op",
                     "wedstrijd id",
                     JOptionPane.PLAIN_MESSAGE,
                     null,
-                    null,
+                    wedstrijden,
                     "");
             if (s == null) {
                 this.dispose();
                 System.exit(0);
                 return;
             }
-        } while (!s.matches("-?\\d+"));
-        AtletiekNuPanel.GetAtletiekNuPanel(jTabbedPane1, Integer.parseInt(s));
+        } while (!isCorrect(s));
+        AtletiekNuPanel.GetAtletiekNuPanel(jTabbedPane1, s);
 
     }
 
@@ -229,4 +241,18 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
+
+    private void initCustomParts() {
+        
+        
+    }
+
+    private boolean isCorrect(Object s) {
+        if(s instanceof Wedstrijd){
+            return true;
+        }else if(s instanceof String){
+            return ((String)s).matches("-?\\d+");
+        }
+        return false;
+    }
 }

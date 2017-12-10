@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import nl.phanos.liteliveresultsclient.classes.Wedstrijd;
 import nl.phanos.liteliveresultsclient.gui.Main;
 import org.apache.http.HttpEntity;
 
@@ -52,15 +53,21 @@ import org.jsoup.select.Elements;
 import sun.misc.IOUtils;
 
 public class LoginHandler {
+    private static LoginHandler dit;
+    public static LoginHandler get() throws Exception {
+        if(dit==null){
+            dit=new LoginHandler();
+        }
+        return dit;
+    }
 
     private String cookies;
     private HttpClient client = HttpClientBuilder.create().build();
     private final String USER_AGENT = "Mozilla/5.0";
     private String nuid;
 
-    public LoginHandler(String nuid) throws Exception {
+    public LoginHandler() throws Exception {
         String url = "https://www.atletiek.nu/login/";
-        this.nuid = nuid;
 
         // make sure cookies is turn on
         CookieHandler.setDefault(new CookieManager());
@@ -71,6 +78,9 @@ public class LoginHandler {
         List<NameValuePair> postParams
                 = this.getFormParams(page, user, pass);
         this.sendPost(url, postParams);
+    }
+    public void setNuid(String nuid){
+        this.nuid = nuid;
     }
     public static boolean isReachable() {
     // Any Open port on other machine
@@ -270,5 +280,20 @@ public class LoginHandler {
         this.cookies = cookies;
         //}
     }
-
+    public Object[] getEigenWedstrijden() throws Exception{
+        ArrayList<Wedstrijd> wedstrijden=new ArrayList<Wedstrijd>();
+        String content = GetPageContent("https://www.atletiek.nu/feeder.php?page=search&do=events&search=&predefinedSearchTemplate=3");
+        Element overview = Jsoup.parse(content).getElementById("overview").getElementsByTag("tbody").first();
+        Elements rows = overview.getElementsByTag("tr");
+        for (Element row : rows) {
+            if(row.hasAttr("onclick")){
+                Wedstrijd w=new Wedstrijd();
+                String[] split=row.attr("onclick").split("/");
+                w.id=split[split.length-2];
+                w.name=row.getElementsByTag("td").first().text()+" - "+row.getElementsByClass("hidden-xs").get(1).text();
+                wedstrijden.add(w);
+            }
+        }
+        return wedstrijden.toArray();
+    }
 }

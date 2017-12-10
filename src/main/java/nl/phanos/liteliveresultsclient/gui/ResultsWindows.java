@@ -6,6 +6,7 @@
 package nl.phanos.liteliveresultsclient.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -64,10 +65,10 @@ public class ResultsWindows extends javax.swing.JFrame {
             method.invoke(util, this, true);
         } catch (Exception e) {
             //System.out.println("OS X Fullscreen FAIL" + e.toString());
-            jMenu1.setEnabled(true);
+            jCheckBoxMenuItem1.setEnabled(true);
         }
-        if (!jMenu1.isEnabled()) {
-            jMenuBar1.removeAll();
+        if (!jCheckBoxMenuItem1.isEnabled()) {
+            jMenuBar1.remove(jCheckBoxMenuItem1);
         }
         initCustumComponents();
         setSerieResults();
@@ -90,6 +91,9 @@ public class ResultsWindows extends javax.swing.JFrame {
         SerieLabel = new java.awt.Label();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -164,17 +168,35 @@ public class ResultsWindows extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))
         );
 
-        jMenu1.setText("FullScreen");
-        jMenu1.setEnabled(false);
-        jMenu1.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                jMenu1MenuSelected(evt);
-            }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+        jMenu1.setText("Options");
+
+        jCheckBoxMenuItem1.setText("Fullscreen");
+        jCheckBoxMenuItem1.setEnabled(false);
+        jCheckBoxMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxMenuItem1ActionPerformed(evt);
             }
         });
+        jMenu1.add(jCheckBoxMenuItem1);
+
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_EQUALS, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.META_MASK));
+        jMenuItem1.setText("Larger Text");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_MINUS, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.META_MASK));
+        jMenuItem2.setText("Smaler Text");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
         jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
@@ -204,22 +226,30 @@ public class ResultsWindows extends javax.swing.JFrame {
     }//GEN-LAST:event_formComponentResized
 
     private void jTable1ComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jTable1ComponentResized
+        resizeColumns();
+    }//GEN-LAST:event_jTable1ComponentResized
+
+    public void resizeColumns() {
         // TODO add your handling code here:
         int tW = jTable1.getWidth();
         TableColumnModel jTableColumnModel = jTable1.getColumnModel();
         int cantCols = jTableColumnModel.getColumnCount();
         if (jTable1.getModel().getColumnCount() > 0) {
-            jTableColumnModel.getColumn(0).setPreferredWidth(tW - 201 - 295);
-            jTableColumnModel.getColumn(1).setPreferredWidth(201);
-            jTableColumnModel.getColumn(2).setPreferredWidth(295);
+            jTableColumnModel.getColumn(0).setPreferredWidth((int)Math.round(tW - (fontSize*2.5) - (fontSize*3.5)));
+            jTableColumnModel.getColumn(1).setPreferredWidth((int)(fontSize*2.5));
+            jTableColumnModel.getColumn(2).setPreferredWidth((int)(fontSize*3.5));
         }
-    }//GEN-LAST:event_jTable1ComponentResized
+    }
 
-    private void jMenu1MenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_jMenu1MenuSelected
+    private void jTable1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseMoved
+        // TODO add your handling code here:
+        jMenuBar1.setVisible(evt.getY() < 50);
+    }//GEN-LAST:event_jTable1MouseMoved
 
+    private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
         //change modes.
         this.fullscreen = !this.fullscreen;
-
+        jCheckBoxMenuItem1.setState(fullscreen);
         // toggle fullscreen mode
         if (!fullscreen) { //change to windowed mode.
 
@@ -270,12 +300,21 @@ public class ResultsWindows extends javax.swing.JFrame {
 
         //make sure that the screen is refreshed.
         repaint();
-    }//GEN-LAST:event_jMenu1MenuSelected
+    }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
 
-    private void jTable1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseMoved
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
-        jMenuBar1.setVisible(evt.getY() < 50);
-    }//GEN-LAST:event_jTable1MouseMoved
+        fontSize++;
+        resizeColumns();
+        ChangeFont(fontSize);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        // TODO add your handling code here:
+        fontSize--;
+        resizeColumns();
+        ChangeFont(fontSize);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
     public void setSerieResults() {
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{"jan test", 1, 10.23});
@@ -323,9 +362,7 @@ public class ResultsWindows extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setFont(new java.awt.Font("Lucida Grande", 0, 80)); // NOI18N
-        SerieLabel.setFont(new java.awt.Font("Lucida Grande", 0, 80)); // NOI18N
-        jTable1.setRowHeight(85);
+        
         jScrollPane1.getViewport().setBackground(Color.black);
         this.setBackground(Color.black);
         JTableHeader header = jTable1.getTableHeader();
@@ -333,7 +370,6 @@ public class ResultsWindows extends javax.swing.JFrame {
         jPanel1.setBackground(Color.black);
         header.setBackground(Color.black);
         header.setForeground(Color.YELLOW);
-        header.setFont(new java.awt.Font("Lucida Grande", 0, 48)); // NOI18N
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
         headerRenderer.setBackground(Color.BLACK);
 
@@ -342,18 +378,35 @@ public class ResultsWindows extends javax.swing.JFrame {
                 jTable1.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
             }
         }
+        ChangeFont(fontSize); 
+    }
+
+    public void ChangeFont(int fontSize) {
+        JTableHeader header = jTable1.getTableHeader();
+        header.setSize(header.getWidth(), fontSize+5);
+        jTable1.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
+        SerieLabel.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
+        SerieLabel.setSize(SerieLabel.getWidth(), fontSize+5);
+        jPanel1.setSize(SerieLabel.getWidth(), fontSize+5);
+        jTable1.setRowHeight(fontSize+5);
+        header.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
+        repaint();
     }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLayeredPane LayerdPane;
     private java.awt.Label SerieLabel;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
     private JLabel logoLabel;
     private ImageIcon icon;
+    private int fontSize=80;
 }

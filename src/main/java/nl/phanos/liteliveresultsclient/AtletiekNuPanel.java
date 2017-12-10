@@ -46,6 +46,8 @@ import nl.phanos.liteliveresultsclient.gui.Main;
  */
 public class AtletiekNuPanel extends JPanel implements TableModelListener {
 
+    
+
     private javax.swing.JSplitPane jSplitPane1 = new javax.swing.JSplitPane();
     public javax.swing.JTextPane jTextPane1 = new JTextPane();
     private javax.swing.JTable parFileNames = new JTable();
@@ -69,10 +71,16 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     public HashMap<String, ParFile> GetparFiles() {
         return parFiles;
     }
-
-    public static AtletiekNuPanel GetAtletiekNuPanel(final JTabbedPane pane, int nuid) {
+    public static AtletiekNuPanel GetAtletiekNuPanel(JTabbedPane JTabbedPane, Object s) {
         if (panel == null) {
-            panel = new AtletiekNuPanel(pane, nuid);
+            if(s instanceof String){
+                panel = new AtletiekNuPanel(JTabbedPane, Integer.parseInt((String)s));
+            }else if(s instanceof Wedstrijd){
+                panel = new AtletiekNuPanel(JTabbedPane, Integer.parseInt(((Wedstrijd)s).id));
+            }
+            else if(s instanceof Integer){
+                panel = new AtletiekNuPanel(JTabbedPane, (int)s);
+            }
             indentifingColumnName = "externalId";
         }
         return panel;
@@ -155,7 +163,8 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         unzip = new UnzipUtility();
         try {
             if (!AtletiekNuPanel.panel.test) {
-                loginHandler = new LoginHandler(this.nuid);
+                loginHandler = LoginHandler.get();
+                loginHandler.setNuid(this.nuid);
                 UpdateListRemote();
             } else {
                 UpdateListFromLocal();
