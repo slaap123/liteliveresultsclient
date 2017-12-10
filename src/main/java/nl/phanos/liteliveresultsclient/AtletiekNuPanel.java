@@ -60,7 +60,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     private String nuid;
     private File baseDir;
     public final static boolean test = false;
-    public final static boolean live = false;
+    public boolean live = true;
     public boolean slave = false;
     public HashMap<String, ParFile> parFiles = new HashMap<String, ParFile>();
 
