@@ -372,12 +372,15 @@ public class ResultsWindows extends javax.swing.JFrame {
         header.setForeground(Color.YELLOW);
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
         headerRenderer.setBackground(Color.BLACK);
-
+        
         for (int i = 0; i < jTable1.getModel().getColumnCount(); i++) {
             if (jTable1.getModel().getColumnCount() > 0) {
                 jTable1.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
             }
         }
+        DefaultTableCellRenderer LEFTRenderer = new DefaultTableCellRenderer();
+        LEFTRenderer.setHorizontalAlignment(JLabel.LEFT);
+        jTable1.getColumnModel().getColumn(1).setCellRenderer(LEFTRenderer);
         ChangeFont(fontSize); 
     }
 
