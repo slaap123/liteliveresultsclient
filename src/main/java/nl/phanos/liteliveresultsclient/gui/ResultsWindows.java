@@ -235,8 +235,8 @@ public class ResultsWindows extends javax.swing.JFrame {
         TableColumnModel jTableColumnModel = jTable1.getColumnModel();
         int cantCols = jTableColumnModel.getColumnCount();
         if (jTable1.getModel().getColumnCount() > 0) {
-            jTableColumnModel.getColumn(0).setPreferredWidth((int)Math.round(tW - (fontSize*2.5) - (fontSize*3.5)));
-            jTableColumnModel.getColumn(1).setPreferredWidth((int)(fontSize*2.5));
+            jTableColumnModel.getColumn(0).setPreferredWidth((int)(fontSize*3.0));
+            jTableColumnModel.getColumn(1).setPreferredWidth((int)Math.round(tW - (fontSize*2.5) - (fontSize*3.5)));
             jTableColumnModel.getColumn(2).setPreferredWidth((int)(fontSize*3.5));
         }
     }
@@ -317,7 +317,7 @@ public class ResultsWindows extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
     public void setSerieResults() {
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
-        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{"jan test", 1, 10.23});
+        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{1,"jan test", 10.23});
     }
 
     public void setSerieResults(ResultFile resultFile) {
@@ -325,7 +325,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         currentDisplayDate = resultFile.BelongsTo.uploadDate;
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         for (ResultFileEntry entry : resultFile.atleten.values()) {
-            ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.naam, entry.baan, entry.tijd});
+            ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.plaats,entry.naam, entry.tijd});
         }
 
     }
@@ -343,11 +343,11 @@ public class ResultsWindows extends javax.swing.JFrame {
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "Atleet", "Baan", "Tijd"
+                    "Plaats","Atleet", "Tijd"
                 }
         ) {
             Class[] types = new Class[]{
-                java.lang.String.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean[]{
                 false, false, false
@@ -380,7 +380,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         }
         DefaultTableCellRenderer LEFTRenderer = new DefaultTableCellRenderer();
         LEFTRenderer.setHorizontalAlignment(JLabel.LEFT);
-        jTable1.getColumnModel().getColumn(1).setCellRenderer(LEFTRenderer);
+        jTable1.getColumnModel().getColumn(0).setCellRenderer(LEFTRenderer);
         ChangeFont(fontSize); 
     }
 
