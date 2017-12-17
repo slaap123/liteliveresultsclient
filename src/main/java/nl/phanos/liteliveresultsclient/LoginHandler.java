@@ -278,6 +278,7 @@ public class LoginHandler {
     public void setCookies(String cookies) {
         //if(cookies!=""){
         this.cookies = cookies;
+        System.out.println(cookies);
         //}
     }
     public Object[] getEigenWedstrijden() throws Exception{
