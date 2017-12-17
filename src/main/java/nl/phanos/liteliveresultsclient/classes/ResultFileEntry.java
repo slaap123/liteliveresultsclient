@@ -22,8 +22,14 @@ public class ResultFileEntry implements java.io.Serializable {
         plaats = Integer.parseInt(line[0]);
         baan = Integer.parseInt(line[1]);
         tijd = line[2];
-        startnummer = Integer.parseInt(line[3]);
+        info = "";
+        if(line[3].length()==0){
+            startnummer = -1;
+        }else{
+            startnummer = Integer.parseInt(line[3]);
+        }
         naam = line[4];
         info = line[5];
+
     }
 }
