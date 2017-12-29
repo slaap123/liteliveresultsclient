@@ -47,6 +47,7 @@ public class Main extends javax.swing.JFrame {
      * Creates new form MainWindow
      */
     public Main() {
+        System.setProperty("apple.awt.application.name", "LiteLiveResultClient");
         window = this;
         initComponents();
         initCustomParts();

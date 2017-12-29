@@ -14,10 +14,16 @@ import java.awt.Label;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -51,6 +57,7 @@ public class ResultsWindows extends javax.swing.JFrame {
      */
     public ResultsWindows() {
         super();
+        System.setProperty("apple.awt.application.name", "ResultWindow");
         //get a reference to the device.
         GraphicsDevice[] ScreenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         this.device = ScreenDevices[ScreenDevices.length - 1];
@@ -71,6 +78,7 @@ public class ResultsWindows extends javax.swing.JFrame {
             jMenuBar1.remove(jCheckBoxMenuItem1);
         }
         initCustumComponents();
+        initClock();
         setSerieResults();
 
     }
@@ -96,6 +104,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1280, 720));
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 formComponentResized(evt);
@@ -219,10 +228,7 @@ public class ResultsWindows extends javax.swing.JFrame {
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
         // TODO add your handling code here:
-        logoLabel.setBounds(this.getWidth() - icon.getIconWidth(),
-                this.getHeight() - icon.getIconHeight(),
-                icon.getIconWidth(),
-                icon.getIconHeight());
+        ChangeFont(fontSize);
     }//GEN-LAST:event_formComponentResized
 
     private void jTable1ComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jTable1ComponentResized
@@ -339,6 +345,11 @@ public class ResultsWindows extends javax.swing.JFrame {
                 icon.getIconWidth(),
                 icon.getIconHeight());
         LayerdPane.add(logoLabel, JLayeredPane.PALETTE_LAYER);
+        clockLabel = new javax.swing.JLabel();
+        clockLabel.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
+        clockLabel.setText("00:00:00");
+        clockLabel.setForeground(Color.YELLOW);
+        LayerdPane.add(clockLabel, JLayeredPane.PALETTE_LAYER);
         jTable1.setRowSelectionAllowed(false);
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
@@ -392,7 +403,16 @@ public class ResultsWindows extends javax.swing.JFrame {
         SerieLabel.setSize(SerieLabel.getWidth(), fontSize+5);
         jPanel1.setSize(SerieLabel.getWidth(), fontSize+5);
         jTable1.setRowHeight(fontSize+5);
+        logoLabel.setBounds(this.getWidth() - icon.getIconWidth(),
+                this.getHeight() - icon.getIconHeight(),
+                icon.getIconWidth(),
+                icon.getIconHeight());
         header.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
+        clockLabel.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
+        clockLabel.setBounds(0,
+                this.getHeight() - (fontSize+15),
+                fontSize*30,
+                (fontSize+5));
         repaint();
     }
 
@@ -410,6 +430,11 @@ public class ResultsWindows extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
     private JLabel logoLabel;
+    public JLabel clockLabel;
     private ImageIcon icon;
     private int fontSize=80;
+
+    private void initClock() {
+        (new ClockServer(this)).start();
+    }
 }
