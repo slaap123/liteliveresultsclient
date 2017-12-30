@@ -29,7 +29,7 @@ public class Clock extends javax.swing.JFrame {
         getContentPane().setBackground(new Color(255, 255, 255, 0));
         //pack();
         initComponents();
-        clockLabel.setText("00:00:00");
+        clockLabel.setText("");
         clockLabel.setForeground(Color.YELLOW);
     }
 

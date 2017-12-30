@@ -347,7 +347,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         LayerdPane.add(logoLabel, JLayeredPane.PALETTE_LAYER);
         clockLabel = new javax.swing.JLabel();
         clockLabel.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
-        clockLabel.setText("00:00:00");
+        clockLabel.setText("");
         clockLabel.setForeground(Color.YELLOW);
         LayerdPane.add(clockLabel, JLayeredPane.PALETTE_LAYER);
         jTable1.setRowSelectionAllowed(false);

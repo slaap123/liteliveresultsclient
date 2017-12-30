@@ -24,15 +24,18 @@ public class ClockServer extends Thread {
 
     public ServerSocket server;
     public BufferedReader in;
+    public PrintWriter out;
     private Socket client;
+    private Socket ouputClient;
     private String line;
     private ResultsWindows resultsWindows;
     private Clock clock;
+    private boolean working = true;
 
     public ClockServer(ResultsWindows resultsWindows) {
         this.resultsWindows = resultsWindows;
         clock = new Clock();
-        
+
         clock.setVisible(true);
     }
 
@@ -43,44 +46,53 @@ public class ClockServer extends Thread {
         } catch (IOException e) {
             System.out.println("Could not listen on port 5001");
             //System.exit(-1);
+            working = false;
         }
 
 //listenSocketSocketserver.acceptSocket
         try {
             client = server.accept();
+            System.out.println("accepted 5001");
+            try {
+                ouputClient = new Socket(client.getInetAddress().getHostAddress(), 5001);
+            } catch (IOException e) {
+                System.out.println("connect failed: 5001");
+            }
         } catch (IOException e) {
             System.out.println("Accept failed: 5001");
             //System.exit(-1);
+            working = false;
         }
 
 //listenSocketBufferedReaderclientPrintWriter
         try {
             in = new BufferedReader(new InputStreamReader(
                     client.getInputStream()));
-            PrintWriter out = new PrintWriter(client.getOutputStream(),
+            out = new PrintWriter(ouputClient.getOutputStream(),
                     true);
         } catch (IOException e) {
             System.out.println("Read failed");
             //System.exit(-1);
+            working = false;
         }
         System.out.println("startReading!!!");
-        while (true) {
+        while (working) {
             try {
                 line = in.readLine();
                 if (line != null) {
                     String[] split = line.split("");
-                        line = "";
-                        for (int i = 0; i < split.length; i++) {
-                            line += split[i];
-                            if (i % 2 == 1 && i + 1 != split.length) {
-                                line += ":";
-                            }
+                    line = "";
+                    for (int i = 0; i < split.length; i++) {
+                        line += split[i];
+                        if (i % 2 == 1 && i + 1 != split.length) {
+                            line += ":";
                         }
+                    }
                     if (resultsWindows != null) {
                         resultsWindows.clockLabel.setText(line);
                         resultsWindows.repaint();
                     }
-                    if(clock != null){
+                    if (clock != null) {
                         clock.clockLabel.setText(line);
                         clock.repaint();
                     }
@@ -88,8 +100,10 @@ public class ClockServer extends Thread {
             } catch (IOException e) {
                 System.out.println("Read failed");
                 //System.exit(-1);
+                working = false;
             }
         }
+        clock.setVisible(false);
     }
 
     /**

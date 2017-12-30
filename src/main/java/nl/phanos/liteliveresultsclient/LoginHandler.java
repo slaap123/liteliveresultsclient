@@ -288,11 +288,15 @@ public class LoginHandler {
         Elements rows = overview.getElementsByTag("tr");
         for (Element row : rows) {
             if(row.hasAttr("onclick")){
+                try{
                 Wedstrijd w=new Wedstrijd();
                 String[] split=row.attr("onclick").split("/");
                 w.id=split[split.length-2];
-                w.name=row.getElementsByTag("td").first().text()+" - "+row.getElementsByClass("hidden-xs").get(1).text();
+                w.name=row.getElementsByTag("td").first().text()+" - "+row.getElementsByTag("td").get(1).getElementsByClass("hidden-xs").first().text();
                 wedstrijden.add(w);
+                }catch(Exception e){
+                    System.out.println(e);
+                }
             }
         }
         return wedstrijden.toArray();
