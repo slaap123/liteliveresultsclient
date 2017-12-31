@@ -30,12 +30,15 @@ import org.jgroups.View;
  */
 public class ResultScreenClient extends ReceiverAdapter {
 
-    JChannel channel;
+    public JChannel channel;
 
     public ResultScreenClient() {
         try {
-            channel = new JChannel().setReceiver(this); // use the default config, udp.xml
-            
+
+            String prop = null;
+            channel = new JChannel(prop).addAddressGenerator(null).setName(null);
+            channel.setReceiver(this); // use the default config, udp.xml
+            System.out.println(channel.printProtocolSpec(true));
             channel.connect("Scoreboards");
 //                ByteArrayInputStream bis = new ByteArrayInputStream(datagramPacket.getData());
 //                ObjectInput in = null;
@@ -67,10 +70,14 @@ public class ResultScreenClient extends ReceiverAdapter {
 
     public void receive(Message msg) {
         try {
-            
-            Object object = msg.getObject();
-            AtletiekNuPanel panel = AtletiekNuPanel.GetAtletiekNuPanel();
-            panel.setParFiles((HashMap<String, ParFile>) object);
+            if (channel.getAddress() != msg.getSrc()) {
+                System.out.println("go message");
+                Object object = msg.getObject();
+                AtletiekNuPanel panel = AtletiekNuPanel.GetAtletiekNuPanel();
+                HashMap<String, ParFile> parfiles = (HashMap<String, ParFile>) object;
+                panel.setParFiles(parfiles);
+                panel.UpdateView();
+            }
         } catch (Exception e) {
             System.out.println(e.toString());
         }

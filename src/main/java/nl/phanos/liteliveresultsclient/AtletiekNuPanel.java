@@ -44,6 +44,7 @@ import nl.phanos.liteliveresultsclient.classes.*;
 import nl.phanos.liteliveresultsclient.gui.Main;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
+import org.jgroups.util.Util;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -215,7 +216,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
 
     public void UpdateListRemote() {
         try {
-            reloadParFiles();
+            //reloadParFiles();
             if (!slave) {
                 loginHandler.getZip();
                 unzip.unzip("tmp.zip", baseDir.getPath());
@@ -327,20 +328,21 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     }
 
     public void setParFiles(HashMap<String, ParFile> newParfiles) {
+        System.out.println("merge parfiles");
         for (Map.Entry<String, ParFile> e : newParfiles.entrySet()) {
             if (parFiles.containsKey(e.getKey())) {
                 ParFile parfile = parFiles.get(e.getKey());
-                if (parfile.uploadDate < e.getValue().uploadDate) {
+                //if (parfile.uploadDate < e.getValue().uploadDate) {
                     parFiles.put(e.getKey(), e.getValue());
                     //System.out.println("newer results");
-                }
+                //}
                 parfile.done = e.getValue().done || parfile.done;
             } else {
                 //System.out.println("new result");
                 parFiles.put(e.getKey(), e.getValue());
             }
             if (Main.getWindow().resultsWindow != null && e.getValue().uploadDate > Main.getWindow().resultsWindow.currentDisplayDate) {
-                //System.out.println("new result for sb");
+                System.out.println("new result for sb");
                 Main.getWindow().resultsWindow.setSerieResults(parFiles.get(e.getKey()).results);
             }
         }
@@ -377,8 +379,9 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
 //                byte[] yourBytes = bos.toByteArray();
                 if (channel != null) {
                     byte[] dataBytes = bos.toByteArray();
-                    channel.send(new Message(null, parFiles));
-                    System.out.println("send parfiles");
+                    Message message = new Message(null, parFiles);
+                    channel.send(message);
+                    System.out.println("send message to all");
                 }
             } catch (Exception ex) {
                 System.out.println("error send parfiles");
@@ -431,24 +434,16 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     public void ChangeSlaveState() {
         slave = !slave;
         if (slave) {
-            RSC = new ResultScreenClient();
-            if (channel != null) {
-                channel.disconnect();
-            }
             channel = null;;
-        } else {
-            InitChannel();
+        }else{
+            channel = RSC.channel;
         }
     }
 
     public void InitChannel() {
         try {
-            if (RSC != null) {
-                RSC.stop();
-            }
-            RSC = null;
-            channel = new JChannel();
-            channel.connect("Scoreboards");
+            RSC = new ResultScreenClient();
+            channel = RSC.channel;
         } catch (Exception ex) {
             Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -506,5 +501,4 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
         parFileNames.repaint();
         doneView.doneParFiles.repaint();
     }
-
 }

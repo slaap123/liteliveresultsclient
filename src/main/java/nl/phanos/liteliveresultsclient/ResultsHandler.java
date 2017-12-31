@@ -82,7 +82,7 @@ public class ResultsHandler extends Thread {
                     AtletiekNuPanel.panel.UpdateList();
                     downladerCounter=0;
                 }else{
-                    AtletiekNuPanel.panel.reloadParFiles();
+                    AtletiekNuPanel.panel.UpdateView();
                 }
                 //System.out.println("end reading");
                 //if(!ResultsPanel.panel.test){
