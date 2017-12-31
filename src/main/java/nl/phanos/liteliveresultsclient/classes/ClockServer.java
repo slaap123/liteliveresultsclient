@@ -22,9 +22,8 @@ import nl.phanos.liteliveresultsclient.gui.ResultsWindows;
  */
 public class ClockServer extends Thread {
 
-    public ServerSocket server;
+    public Socket server;
     public BufferedReader in;
-    public PrintWriter out;
     private Socket client;
     private Socket ouputClient;
     private String line;
@@ -42,7 +41,7 @@ public class ClockServer extends Thread {
     @Override
     public void run() {
         try {
-            server = new ServerSocket(5001);
+            server = new Socket("192.168.1.103",5001);
         } catch (IOException e) {
             System.out.println("Could not listen on port 5001");
             //System.exit(-1);
@@ -50,26 +49,12 @@ public class ClockServer extends Thread {
         }
 
 //listenSocketSocketserver.acceptSocket
-        try {
-            client = server.accept();
-            System.out.println("accepted 5001");
-            try {
-                ouputClient = new Socket(client.getInetAddress().getHostAddress(), 5001);
-            } catch (IOException e) {
-                System.out.println("connect failed: 5001");
-            }
-        } catch (IOException e) {
-            System.out.println("Accept failed: 5001");
-            //System.exit(-1);
-            working = false;
-        }
+        
 
 //listenSocketBufferedReaderclientPrintWriter
         try {
             in = new BufferedReader(new InputStreamReader(
-                    client.getInputStream()));
-            out = new PrintWriter(ouputClient.getOutputStream(),
-                    true);
+                    server.getInputStream()));
         } catch (IOException e) {
             System.out.println("Read failed");
             //System.exit(-1);
@@ -82,9 +67,9 @@ public class ClockServer extends Thread {
                 if (line != null) {
                     String[] split = line.split("");
                     line = "";
-                    for (int i = 0; i < split.length; i++) {
+                    for (int i = 1; i < 7; i++) {
                         line += split[i];
-                        if (i % 2 == 1 && i + 1 != split.length) {
+                        if (i % 2 == 0 && i + 1 != 7) {
                             line += ":";
                         }
                     }
