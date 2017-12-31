@@ -323,7 +323,7 @@ public class ResultsWindows extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
     public void setSerieResults() {
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
-        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{1,"jan test", 10.23});
+        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{1,"Giulia Kuhn", 5.13});
     }
 
     public void setSerieResults(ResultFile resultFile) {

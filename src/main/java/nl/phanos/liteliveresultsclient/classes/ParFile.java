@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 /**
  *
@@ -128,4 +130,6 @@ public class ParFile implements java.io.Serializable {
         resultFile=file;
         results=new ResultFile(file,this);
     }
+
+    
 }

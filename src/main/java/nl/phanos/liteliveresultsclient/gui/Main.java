@@ -47,6 +47,7 @@ public class Main extends javax.swing.JFrame {
      * Creates new form MainWindow
      */
     public Main() {
+        System.setProperty("java.net.preferIPv4Stack" , "true");
         System.setProperty("apple.awt.application.name", "LiteLiveResultClient");
         window = this;
         initComponents();
@@ -171,7 +172,7 @@ public class Main extends javax.swing.JFrame {
 
     private void jCheckBoxMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem2ActionPerformed
         // TODO add your handling code here:
-        AtletiekNuPanel.GetAtletiekNuPanel().slave = !AtletiekNuPanel.GetAtletiekNuPanel().slave;
+        AtletiekNuPanel.GetAtletiekNuPanel().ChangeSlaveState();
         jCheckBoxMenuItem2.setState(AtletiekNuPanel.GetAtletiekNuPanel().slave);
     }//GEN-LAST:event_jCheckBoxMenuItem2ActionPerformed
 

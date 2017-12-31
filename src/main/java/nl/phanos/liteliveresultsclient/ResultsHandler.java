@@ -43,10 +43,13 @@ public class ResultsHandler extends Thread {
     
     @Override
     public void run() {
+        
         while (true) {
             if (LoginHandler.isReachable()) {
-                AtletiekNuPanel.panel.removeLine(NO_INTERNET_CONNECTION_WAITING_10_SECONDS);
-                System.out.println("start reading");
+                if(AtletiekNuPanel.panel!=null){
+                    AtletiekNuPanel.panel.removeLine(NO_INTERNET_CONNECTION_WAITING_10_SECONDS);
+                }
+                //System.out.println("start reading");
                 for (File fileEntry : dir.listFiles()) {
                     if (fileEntry.getName().endsWith("txt")) {
                         ParFile parFile = AtletiekNuPanel.panel.parFiles.get(fileEntry.getName().replace("txt", "par"));
@@ -64,9 +67,8 @@ public class ResultsHandler extends Thread {
                     }
                 }
                 try {
-                    System.out.println("files:" + files.size());
-                    System.out.println(AtletiekNuPanel.panel.live ? "true" : "false");
                     if (AtletiekNuPanel.panel.live && files.size() > 0) {
+                        System.out.println("files:" + files.size());
                         ((AtletiekNuPanel) AtletiekNuPanel.panel).loginHandler.submitResults(files);
                         System.out.println("upload");
                     }
@@ -82,7 +84,7 @@ public class ResultsHandler extends Thread {
                 }else{
                     AtletiekNuPanel.panel.reloadParFiles();
                 }
-                System.out.println("end reading");
+                //System.out.println("end reading");
                 //if(!ResultsPanel.panel.test){
                 //}
             } else {
