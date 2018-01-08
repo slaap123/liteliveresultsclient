@@ -381,7 +381,6 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                     byte[] dataBytes = bos.toByteArray();
                     Message message = new Message(null, parFiles);
                     channel.send(message);
-                    System.out.println("send message to all");
                 }
             } catch (Exception ex) {
                 System.out.println("error send parfiles");

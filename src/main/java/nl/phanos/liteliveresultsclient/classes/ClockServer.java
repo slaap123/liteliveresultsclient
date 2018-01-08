@@ -6,12 +6,15 @@
 package nl.phanos.liteliveresultsclient.classes;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import static java.lang.System.out;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 import nl.phanos.liteliveresultsclient.gui.Clock;
 import nl.phanos.liteliveresultsclient.gui.ResultsWindows;
@@ -22,14 +25,17 @@ import nl.phanos.liteliveresultsclient.gui.ResultsWindows;
  */
 public class ClockServer extends Thread {
 
-    public Socket server;
-    public BufferedReader in;
+    private ServerSocket server;
+    private BufferedReader in;
+    private DataOutputStream out;
     private Socket client;
     private Socket ouputClient;
     private String line;
     private ResultsWindows resultsWindows;
-    private Clock clock;
+    public Clock clock;
     private boolean working = true;
+    private boolean restart = false;
+    private String ip="192.168.1.13";
 
     public ClockServer(ResultsWindows resultsWindows) {
         this.resultsWindows = resultsWindows;
@@ -38,12 +44,30 @@ public class ClockServer extends Thread {
         clock.setVisible(true);
     }
 
+    public String getIp() {
+        return ip;
+    }
+    
+    
+    public void changeIp(String newip){
+        restart=true;
+        ip=newip;
+        working=false;
+        if(!this.isAlive()){
+            this.start();
+            System.out.println("restart");
+        }
+    }
+    
     @Override
     public void run() {
+        restart=false;
+        working = true;
         try {
-            server = new Socket("192.168.1.103",5001);
+            //server = new ServerSocket(5002);
+            client = new Socket(ip,5002);
         } catch (IOException e) {
-            System.out.println("Could not listen on port 5001");
+            System.out.println("Could not listen on port 5002");
             //System.exit(-1);
             working = false;
         }
@@ -53,8 +77,9 @@ public class ClockServer extends Thread {
 
 //listenSocketBufferedReaderclientPrintWriter
         try {
-            in = new BufferedReader(new InputStreamReader(
-                    server.getInputStream()));
+            //client = server.accept();
+            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            //out = new DataOutputStream(ouputClient.getOutputStream());
         } catch (IOException e) {
             System.out.println("Read failed");
             //System.exit(-1);
@@ -64,10 +89,11 @@ public class ClockServer extends Thread {
         while (working) {
             try {
                 line = in.readLine();
-                if (line != null) {
+                if (line != null&&line.length()>1) {
+                    //out.writeBytes(line);
                     String[] split = line.split("");
                     line = "";
-                    for (int i = 1; i < 7; i++) {
+                    for (int i = 1; i < Math.min(split.length, 7); i++) {
                         line += split[i];
                         if (i % 2 == 0 && i + 1 != 7) {
                             line += ":";
@@ -88,7 +114,12 @@ public class ClockServer extends Thread {
                 working = false;
             }
         }
-        clock.setVisible(false);
+        if(restart){
+        System.out.println("restart!!!");
+            this.start();
+        }else{
+            clock.setVisible(false);
+        }
     }
 
     /**

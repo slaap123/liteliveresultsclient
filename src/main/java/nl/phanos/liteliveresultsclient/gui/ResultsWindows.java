@@ -28,12 +28,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import nl.phanos.liteliveresultsclient.classes.*;
+import org.apache.http.conn.util.InetAddressUtils;
 
 /**
  *
@@ -51,6 +53,7 @@ public class ResultsWindows extends javax.swing.JFrame {
 
     //variable used to toggle between windowed and fullscreen.
     protected boolean fullscreen = false;
+    private ClockServer clockServer;
 
     /**
      * Creates new form ResultsWindows
@@ -102,6 +105,9 @@ public class ResultsWindows extends javax.swing.JFrame {
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        SeparateClock = new javax.swing.JCheckBoxMenuItem();
+        ChangeIp = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1280, 720));
@@ -207,6 +213,27 @@ public class ResultsWindows extends javax.swing.JFrame {
         jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Clock");
+
+        SeparateClock.setSelected(true);
+        SeparateClock.setText("Separate clock");
+        SeparateClock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SeparateClockActionPerformed(evt);
+            }
+        });
+        jMenu2.add(SeparateClock);
+
+        ChangeIp.setText("Change Ip");
+        ChangeIp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ChangeIpActionPerformed(evt);
+            }
+        });
+        jMenu2.add(ChangeIp);
+
+        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -321,6 +348,28 @@ public class ResultsWindows extends javax.swing.JFrame {
         resizeColumns();
         ChangeFont(fontSize);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void SeparateClockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SeparateClockActionPerformed
+        // TODO add your handling code here
+        clockServer.clock.setVisible(SeparateClock.getState());
+    }//GEN-LAST:event_SeparateClockActionPerformed
+
+    private void ChangeIpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChangeIpActionPerformed
+        // TODO add your handling code here:
+        
+        Object s="";
+        do {
+            s =  JOptionPane.showInputDialog(
+                    this,
+                    "Geef Ip van MacFinish op",
+                    "ip",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "");
+        } while (!InetAddressUtils.isIPv4Address((String)s));
+        clockServer.changeIp((String)s);
+    }//GEN-LAST:event_ChangeIpActionPerformed
     public void setSerieResults() {
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{1,"Giulia Kuhn", 5.13});
@@ -418,10 +467,13 @@ public class ResultsWindows extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem ChangeIp;
     private javax.swing.JLayeredPane LayerdPane;
+    private javax.swing.JCheckBoxMenuItem SeparateClock;
     private java.awt.Label SerieLabel;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
@@ -435,6 +487,7 @@ public class ResultsWindows extends javax.swing.JFrame {
     private int fontSize=80;
 
     private void initClock() {
-        (new ClockServer(this)).start();
+        clockServer = new ClockServer(this);
+        (clockServer).start();
     }
 }
