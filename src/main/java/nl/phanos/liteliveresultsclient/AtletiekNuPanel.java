@@ -78,6 +78,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     public static String indentifingColumnName;
     private ResultScreenClient RSC;
     JChannel channel;
+    public String club;
 
     public HashMap<String, ParFile> GetparFiles() {
         return parFiles;
@@ -89,6 +90,7 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                 panel = new AtletiekNuPanel(JTabbedPane, Integer.parseInt((String) s));
             } else if (s instanceof Wedstrijd) {
                 panel = new AtletiekNuPanel(JTabbedPane, Integer.parseInt(((Wedstrijd) s).id));
+                panel.club=((Wedstrijd) s).club;
             } else if (s instanceof Integer) {
                 panel = new AtletiekNuPanel(JTabbedPane, (int) s);
             }

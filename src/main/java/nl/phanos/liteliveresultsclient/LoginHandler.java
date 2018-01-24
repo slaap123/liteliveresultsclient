@@ -292,7 +292,9 @@ public class LoginHandler {
                 Wedstrijd w=new Wedstrijd();
                 String[] split=row.attr("onclick").split("/");
                 w.id=split[split.length-2];
-                w.name=row.getElementsByTag("td").first().text()+" - "+row.getElementsByTag("td").get(1).getElementsByClass("hidden-xs").first().text();
+                w.date=row.getElementsByTag("td").first().text();
+                w.club=row.getElementsByTag("td").get(3).text().replace(" ","").replace(",","");
+                w.name=w.date+" - "+row.getElementsByTag("td").get(1).getElementsByClass("hidden-xs").first().text();
                 wedstrijden.add(w);
                 }catch(Exception e){
                     System.out.println(e);

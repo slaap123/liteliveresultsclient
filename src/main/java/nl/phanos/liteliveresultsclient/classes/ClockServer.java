@@ -35,7 +35,7 @@ public class ClockServer extends Thread {
     public Clock clock;
     private boolean working = true;
     private boolean restart = false;
-    private String ip="192.168.1.13";
+    private String ip="192.168.1.121";
 
     public ClockServer(ResultsWindows resultsWindows) {
         this.resultsWindows = resultsWindows;

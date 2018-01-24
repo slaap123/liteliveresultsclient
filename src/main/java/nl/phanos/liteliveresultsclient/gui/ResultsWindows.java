@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import nl.phanos.liteliveresultsclient.AtletiekNuPanel;
 import nl.phanos.liteliveresultsclient.classes.*;
 import org.apache.http.conn.util.InetAddressUtils;
 
@@ -387,7 +389,7 @@ public class ResultsWindows extends javax.swing.JFrame {
 
     private void initCustumComponents() {
         logoLabel = new javax.swing.JLabel();
-        icon = new ImageIcon(getClass().getResource("/phanosLogo.png"));
+        icon = new ImageIcon(getCLub());
         logoLabel.setIcon(icon); // NOI18N
         logoLabel.setBounds(this.getWidth() - icon.getIconWidth(),
                 this.getHeight() - icon.getIconHeight(),
@@ -489,5 +491,18 @@ public class ResultsWindows extends javax.swing.JFrame {
     private void initClock() {
         clockServer = new ClockServer(this);
         (clockServer).start();
+    }
+
+    private URL getCLub() {
+        String club=AtletiekNuPanel.GetAtletiekNuPanel().club;
+        System.out.println(club);
+        if(club==null){
+            club="PhanosAmsterdam";   
+        }
+        URL iconLoc=getClass().getResource("/"+club+"Logo.png");
+        if(iconLoc==null){
+            iconLoc=getClass().getResource("/PhanosAmsterdamLogo.png");
+        }
+        return iconLoc;
     }
 }

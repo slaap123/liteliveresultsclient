@@ -12,6 +12,8 @@ package nl.phanos.liteliveresultsclient.classes;
 public class Wedstrijd {
     public String id;
     public String name;
+    public String date;
+    public String club;
 
     @Override
     public String toString() {
