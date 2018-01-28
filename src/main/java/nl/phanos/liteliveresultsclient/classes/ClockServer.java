@@ -65,7 +65,7 @@ public class ClockServer extends Thread {
         working = true;
         try {
             //server = new ServerSocket(5002);
-            client = new Socket(ip,5002);
+            client = new Socket(ip,1202);
         } catch (IOException e) {
             System.out.println("Could not listen on port 5002");
             //System.exit(-1);

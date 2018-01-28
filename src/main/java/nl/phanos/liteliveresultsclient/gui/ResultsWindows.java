@@ -11,6 +11,8 @@ import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Label;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
@@ -23,6 +25,8 @@ import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -30,6 +34,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -57,6 +63,9 @@ public class ResultsWindows extends javax.swing.JFrame {
     protected boolean fullscreen = false;
     private ClockServer clockServer;
 
+    public int currentRow = 0;
+    private TimerTask tt;
+
     /**
      * Creates new form ResultsWindows
      */
@@ -68,7 +77,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         this.device = ScreenDevices[ScreenDevices.length - 1];
         //save the old display mode before changing it.
         dispModeOld = device.getDisplayMode();
-        
+
         initComponents();
         try {
             Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
@@ -270,9 +279,9 @@ public class ResultsWindows extends javax.swing.JFrame {
         TableColumnModel jTableColumnModel = jTable1.getColumnModel();
         int cantCols = jTableColumnModel.getColumnCount();
         if (jTable1.getModel().getColumnCount() > 0) {
-            jTableColumnModel.getColumn(0).setPreferredWidth((int)(fontSize*3.0));
-            jTableColumnModel.getColumn(1).setPreferredWidth((int)Math.round(tW - (fontSize*2.5) - (fontSize*3.5)));
-            jTableColumnModel.getColumn(2).setPreferredWidth((int)(fontSize*3.5));
+            jTableColumnModel.getColumn(0).setPreferredWidth((int) (fontSize * 3.0));
+            jTableColumnModel.getColumn(1).setPreferredWidth((int) Math.round(tW - (fontSize * 2.5) - (fontSize * 3.5)));
+            jTableColumnModel.getColumn(2).setPreferredWidth((int) (fontSize * 3.5));
         }
     }
 
@@ -358,10 +367,10 @@ public class ResultsWindows extends javax.swing.JFrame {
 
     private void ChangeIpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChangeIpActionPerformed
         // TODO add your handling code here:
-        
-        Object s="";
+
+        Object s = "";
         do {
-            s =  JOptionPane.showInputDialog(
+            s = JOptionPane.showInputDialog(
                     this,
                     "Geef Ip van MacFinish op",
                     "ip",
@@ -369,12 +378,12 @@ public class ResultsWindows extends javax.swing.JFrame {
                     null,
                     null,
                     "");
-        } while (!InetAddressUtils.isIPv4Address((String)s));
-        clockServer.changeIp((String)s);
+        } while (!InetAddressUtils.isIPv4Address((String) s));
+        clockServer.changeIp((String) s);
     }//GEN-LAST:event_ChangeIpActionPerformed
     public void setSerieResults() {
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
-        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{1,"Giulia Kuhn", 5.13});
+        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{1, "Giulia Kuhn", 5.13});
     }
 
     public void setSerieResults(ResultFile resultFile) {
@@ -382,10 +391,31 @@ public class ResultsWindows extends javax.swing.JFrame {
         currentDisplayDate = resultFile.BelongsTo.uploadDate;
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         for (ResultFileEntry entry : resultFile.atleten.values()) {
-            ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.plaats,entry.naam, entry.tijd});
+            ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.plaats, entry.naam, entry.tijd});
         }
+        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{jTable1.getRowCount(), "", ""});
+        //if (isCellVisible(jTable1, jTable1.getRowCount() - 1, jTable1.getColumnCount())) {
+            Timer timer = new Timer();
+            tt = new TimerTask() {
 
+                @Override
+                public void run() {
+                    jTable1.scrollRectToVisible(jTable1.getCellRect(currentRow, jTable1.getColumnCount(), true));
+                        System.out.println("currentRow:"+currentRow);
+                    if (currentRow < jTable1.getRowCount()) {
+                        currentRow++;
+                    } else {
+                        currentRow=0;
+                        //tt.cancel();
+                    }
+                }
+            };
+            timer.schedule(tt, 0, 3000);
+        //}
+        //
     }
+
+    
 
     private void initCustumComponents() {
         logoLabel = new javax.swing.JLabel();
@@ -405,7 +435,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "Plaats","Atleet", "Tijd"
+                    "Plaats", "Atleet", "Tijd"
                 }
         ) {
             Class[] types = new Class[]{
@@ -424,7 +454,6 @@ public class ResultsWindows extends javax.swing.JFrame {
             }
         });
 
-        
         jScrollPane1.getViewport().setBackground(Color.black);
         this.setBackground(Color.black);
         JTableHeader header = jTable1.getTableHeader();
@@ -434,7 +463,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         header.setForeground(Color.YELLOW);
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
         headerRenderer.setBackground(Color.BLACK);
-        
+
         for (int i = 0; i < jTable1.getModel().getColumnCount(); i++) {
             if (jTable1.getModel().getColumnCount() > 0) {
                 jTable1.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
@@ -443,17 +472,17 @@ public class ResultsWindows extends javax.swing.JFrame {
         DefaultTableCellRenderer LEFTRenderer = new DefaultTableCellRenderer();
         LEFTRenderer.setHorizontalAlignment(JLabel.LEFT);
         jTable1.getColumnModel().getColumn(0).setCellRenderer(LEFTRenderer);
-        ChangeFont(fontSize); 
+        ChangeFont(fontSize);
     }
 
     public void ChangeFont(int fontSize) {
         JTableHeader header = jTable1.getTableHeader();
-        header.setSize(header.getWidth(), fontSize+5);
+        header.setSize(header.getWidth(), fontSize + 5);
         jTable1.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
         SerieLabel.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
-        SerieLabel.setSize(SerieLabel.getWidth(), fontSize+5);
-        jPanel1.setSize(SerieLabel.getWidth(), fontSize+5);
-        jTable1.setRowHeight(fontSize+5);
+        SerieLabel.setSize(SerieLabel.getWidth(), fontSize + 5);
+        jPanel1.setSize(SerieLabel.getWidth(), fontSize + 5);
+        jTable1.setRowHeight(fontSize + 5);
         logoLabel.setBounds(this.getWidth() - icon.getIconWidth(),
                 this.getHeight() - icon.getIconHeight(),
                 icon.getIconWidth(),
@@ -461,9 +490,9 @@ public class ResultsWindows extends javax.swing.JFrame {
         header.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
         clockLabel.setFont(new java.awt.Font("Lucida Grande", 0, fontSize)); // NOI18N
         clockLabel.setBounds(0,
-                this.getHeight() - (fontSize+15),
-                fontSize*30,
-                (fontSize+5));
+                this.getHeight() - (fontSize + 15),
+                fontSize * 30,
+                (fontSize + 5));
         repaint();
     }
 
@@ -486,7 +515,7 @@ public class ResultsWindows extends javax.swing.JFrame {
     private JLabel logoLabel;
     public JLabel clockLabel;
     private ImageIcon icon;
-    private int fontSize=80;
+    private int fontSize = 80;
 
     private void initClock() {
         clockServer = new ClockServer(this);
@@ -494,14 +523,14 @@ public class ResultsWindows extends javax.swing.JFrame {
     }
 
     private URL getCLub() {
-        String club=AtletiekNuPanel.GetAtletiekNuPanel().club;
+        String club = AtletiekNuPanel.GetAtletiekNuPanel().club;
         System.out.println(club);
-        if(club==null){
-            club="PhanosAmsterdam";   
+        if (club == null) {
+            club = "PhanosAmsterdam";
         }
-        URL iconLoc=getClass().getResource("/"+club+"Logo.png");
-        if(iconLoc==null){
-            iconLoc=getClass().getResource("/PhanosAmsterdamLogo.png");
+        URL iconLoc = getClass().getResource("/" + club + "Logo.png");
+        if (iconLoc == null) {
+            iconLoc = getClass().getResource("/PhanosAmsterdamLogo.png");
         }
         return iconLoc;
     }
