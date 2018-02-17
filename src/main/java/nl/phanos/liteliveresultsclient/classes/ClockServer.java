@@ -35,7 +35,7 @@ public class ClockServer extends Thread {
     public Clock clock;
     private boolean working = true;
     private boolean restart = false;
-    private String ip="192.168.1.121";
+    private String ip="0.0.0.0";
 
     public ClockServer(ResultsWindows resultsWindows) {
         this.resultsWindows = resultsWindows;
@@ -65,9 +65,9 @@ public class ClockServer extends Thread {
         working = true;
         try {
             //server = new ServerSocket(5002);
-            client = new Socket(ip,1202);
+            client = new Socket(ip,1201);
         } catch (IOException e) {
-            System.out.println("Could not listen on port 5002");
+            System.out.println("Could not listen on port "+1201);
             //System.exit(-1);
             working = false;
         }
@@ -90,7 +90,7 @@ public class ClockServer extends Thread {
             try {
                 line = in.readLine();
                 if (line != null&&line.length()>1) {
-                    //out.writeBytes(line);
+                    out.writeBytes(line);
                     String[] split = line.split("");
                     line = "";
                     for (int i = 1; i < Math.min(split.length, 7); i++) {
