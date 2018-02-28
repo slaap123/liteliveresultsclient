@@ -292,12 +292,14 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
             File file = new File(baseDir.getAbsolutePath() + "/results.ser");
             readSerialized(file);
         } else {
-            File[] files = new File(baseDir.getAbsolutePath()).listFiles();
-            for (File file : files) {
-                if (file.isFile() && file.getName().endsWith(".ser")) {
-                    readSerialized(file);
-                }
-            }
+            File file = new File(baseDir.getAbsolutePath() + "/results.ser");
+            readSerialized(file);
+//            File[] files = new File(baseDir.getAbsolutePath()).listFiles();
+//            for (File file : files) {
+//                if (file.isFile() && file.getName().endsWith(".ser")) {
+//                    readSerialized(file);
+//                }
+//            }
         }
         UpdateView();
     }

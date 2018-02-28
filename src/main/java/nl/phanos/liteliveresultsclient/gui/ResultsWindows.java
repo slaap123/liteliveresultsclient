@@ -391,7 +391,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         currentDisplayDate = resultFile.BelongsTo.uploadDate;
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         for (ResultFileEntry entry : resultFile.atleten.values()) {
-            ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.plaats, entry.naam, entry.tijd});
+            ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.plaats, entry.naam, entry.tijdMooi()});
         }
         ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{jTable1.getRowCount(), "", ""});
         //if (isCellVisible(jTable1, jTable1.getRowCount() - 1, jTable1.getColumnCount())) {
@@ -401,7 +401,7 @@ public class ResultsWindows extends javax.swing.JFrame {
                 @Override
                 public void run() {
                     jTable1.scrollRectToVisible(jTable1.getCellRect(currentRow, jTable1.getColumnCount(), true));
-                        System.out.println("currentRow:"+currentRow);
+                        //System.out.println("currentRow:"+currentRow);
                     if (currentRow < jTable1.getRowCount()) {
                         currentRow++;
                     } else {

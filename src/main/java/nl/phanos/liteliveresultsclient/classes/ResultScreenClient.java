@@ -23,6 +23,7 @@ import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
+import org.jgroups.stack.AddressGenerator;
 
 /**
  *
@@ -36,9 +37,10 @@ public class ResultScreenClient extends ReceiverAdapter {
         try {
 
             String prop = null;
-            channel = new JChannel(prop).addAddressGenerator(null).setName(null);
+            channel = new JChannel().addAddressGenerator(null).setName(null);
+            
             channel.setReceiver(this); // use the default config, udp.xml
-            System.out.println(channel.printProtocolSpec(true));
+            //System.out.println(channel.printProtocolSpec(true));
             channel.connect("Scoreboards");
 //                ByteArrayInputStream bis = new ByteArrayInputStream(datagramPacket.getData());
 //                ObjectInput in = null;

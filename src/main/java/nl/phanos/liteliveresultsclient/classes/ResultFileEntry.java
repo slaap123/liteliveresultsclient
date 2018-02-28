@@ -5,6 +5,9 @@
  */
 package nl.phanos.liteliveresultsclient.classes;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 /**
  *
  * @author woutermkievit
@@ -32,4 +35,14 @@ public class ResultFileEntry implements java.io.Serializable {
         info = line[5];
 
     }
+    
+    public String tijdMooi(){
+        String re=tijd;
+        try{
+            NumberFormat formatter = new DecimalFormat("#0.00"); 
+            re=formatter.format((Math.ceil(Double.parseDouble(tijd)*100)/100))+"";
+        }catch(Exception e){
+        }
+        return re;
+    };
 }
