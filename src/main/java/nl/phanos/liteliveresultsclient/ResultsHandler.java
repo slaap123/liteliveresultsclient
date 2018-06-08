@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +55,23 @@ public class ResultsHandler extends Thread {
                 for (File fileEntry : dir.listFiles()) {
                     if (fileEntry.getName().endsWith("txt")) {
                         ParFile parFile = AtletiekNuPanel.panel.parFiles.get(fileEntry.getName().replace("txt", "par"));
+                        if(parFile==null){
+                            int id;
+                            String serie;
+                            try{
+                             String[] listID=fileEntry.getName().split(",",2)[0].split("-", 4);
+                             id=Integer.parseInt(listID[0]);
+                             serie=listID[2];
+                            }catch(Exception e){
+                                continue;
+                            }
+                            for (Entry<String,ParFile> file : AtletiekNuPanel.panel.parFiles.entrySet()) {
+                                if(file.getValue().startlijst_onderdeel_id==id&&file.getValue().serie.trim().equals(serie.trim())){
+                                    parFile=file.getValue();
+                                    break;
+                                }
+                            }
+                        }
                         if (parFile != null) {
                             parFile.foundResult = true;
                             if ((parFile.done && parFile.resultSize != fileEntry.length()) || parFile.forceUpload) {

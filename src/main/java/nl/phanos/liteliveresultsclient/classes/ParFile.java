@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import jdk.nashorn.internal.runtime.regexp.joni.Regex;
+import nl.phanos.liteliveresultsclient.gui.Main;
 
 /**
  *
@@ -99,6 +100,7 @@ public class ParFile implements java.io.Serializable {
                 }
             }
         }
+        done=Main.getWindow().defaultSelected;
     }
     
     public void writeValuesToFile(){

@@ -14,6 +14,7 @@ import static java.lang.System.out;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -74,7 +75,8 @@ public class ClockServer extends Thread {
 //            working = false;
 //        }
         try {
-            DatagramSocket serverSocket = new DatagramSocket(1201,InetAddress.getByName("0.0.0.0"));
+            MulticastSocket serverSocket = new MulticastSocket(1201);
+            System.out.println( serverSocket.getInterface());
             byte[] receiveData = new byte[1024];
             byte[] sendData = new byte[1024];
             while (working) {
@@ -83,7 +85,9 @@ public class ClockServer extends Thread {
                 String sentence = new String(receivePacket.getData());
                 String[] data = sentence.split("\n");
                 String line = "  :  :  ";
+                //System.out.println(sentence);
                 if (data.length > 3) {
+                    try{
                     Long millis = Long.parseLong(data[3].split("\t")[1]);
                     Long millisFnish = Long.parseLong(data[4].split("\t")[1]);
 
@@ -94,6 +98,8 @@ public class ClockServer extends Thread {
                         long hs = (millis / 10000) % 100;
                         if (millisFnish == 0) {
                             hs = hs / 10 % 10;
+                        }else{
+                            hs=(long) Math.ceil(hs);
                         }
                         long second = (millis / 1000000) % 60;
                         long minute = (millis / (1000000 * 60)) % 60;
@@ -109,6 +115,9 @@ public class ClockServer extends Thread {
                         }
                     }else{
                         line = "  :  :  ";
+                    }
+                    }catch(Exception e){
+                        
                     }
                 }
                 if (resultsWindows != null) {

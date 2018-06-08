@@ -393,7 +393,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         for (ResultFileEntry entry : resultFile.atleten.values()) {
             ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.plaats, entry.naam, entry.tijdMooi()});
         }
-        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{jTable1.getRowCount(), "", ""});
+        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{jTable1.getRowCount()+1, "", ""});
         //if (isCellVisible(jTable1, jTable1.getRowCount() - 1, jTable1.getColumnCount())) {
             Timer timer = new Timer();
             tt = new TimerTask() {

@@ -60,8 +60,12 @@ public class ResultFile implements java.io.Serializable {
         while (lines.length > lI) {
             String[] line = lines[lI].split("\t");
             if (line.length > 1) {
+                try{
                 ResultFileEntry entry = new ResultFileEntry(line);
                 atleten.put(entry.plaats, entry);
+                }catch(Exception e){
+                    System.out.println(e);
+                }
             }
             lI++;
         }
