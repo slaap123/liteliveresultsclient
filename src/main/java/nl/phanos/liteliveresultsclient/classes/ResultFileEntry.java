@@ -17,22 +17,16 @@ public class ResultFileEntry implements java.io.Serializable {
     public int plaats;
     public int baan;
     public String tijd;
-    public int startnummer;
-    public String naam;
-    public String info;
+    public Atleet atleet;
+    //public int startnummer;
+    //public String naam;
+    //public String info;
 
     ResultFileEntry(String[] line) {
         plaats = Integer.parseInt(line[0]);
         baan = Integer.parseInt(line[1]);
+        atleet=Atleet.getAtleet(line[3], line[4], line[5]);
         tijd = line[2];
-        info = "";
-        if(line[3].length()==0){
-            startnummer = -1;
-        }else{
-            startnummer = Integer.parseInt(line[3]);
-        }
-        naam = line[4];
-        info = line[5];
 
     }
     

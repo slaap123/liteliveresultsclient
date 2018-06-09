@@ -15,19 +15,13 @@ import java.util.logging.Logger;
  */
 public class ParFileEntry implements java.io.Serializable, Comparable<ParFileEntry> {
 
-    String startnummer;
-    String baan;
-    String naam;
-    String info;
+    public String baan;
+    public Atleet atleet;
 
     ParFileEntry(String[] params) {
         try {
-            startnummer = params[0];
             baan = params[1];
-            naam = params[2];
-            if (params.length > 3) {
-                info = params[3];
-            }
+            this.atleet=Atleet.getAtleet(params[0], params[2], (params.length > 3)?params[3]:"");
         } catch (ArrayIndexOutOfBoundsException ex) {
             System.out.println(Arrays.toString(params));
             Logger.getLogger(ParFile.class.getName()).log(Level.SEVERE, null, ex);
@@ -36,10 +30,8 @@ public class ParFileEntry implements java.io.Serializable, Comparable<ParFileEnt
 
     public void Update(String[] params) {
         try {
-            startnummer = params[0];
             baan = params[1];
-            naam = params[2];
-            info = params[3];
+            this.atleet=Atleet.getAtleet(params[0], params[2], (params.length > 3)?params[3]:"");
         } catch (ArrayIndexOutOfBoundsException ex) {
             System.out.println(Arrays.toString(params));
             Logger.getLogger(ParFile.class.getName()).log(Level.SEVERE, null, ex);

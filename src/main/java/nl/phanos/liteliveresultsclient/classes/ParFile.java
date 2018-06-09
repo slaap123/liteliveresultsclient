@@ -107,7 +107,7 @@ public class ParFile implements java.io.Serializable {
         List<String> lines=new ArrayList<String>();
         lines.addAll(getHeaderInfo());
         for(ParFileEntry entry : atleten.values()){
-            lines.add(entry.startnummer+"\t"+entry.baan+"\t"+entry.naam+"\t"+entry.info);
+            lines.add(entry.atleet.startnummer+"\t"+entry.baan+"\t"+entry.atleet.naam+"\t"+entry.atleet.info);
         }
         try {
             Files.write(Paths.get(fileName), lines, Charset.forName("UTF-8"));

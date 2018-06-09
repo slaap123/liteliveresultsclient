@@ -236,6 +236,10 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                     parFiles.put(fileEntry.getName(), entry);
                 }
             }
+            
+            if (Main.getWindow().resultsWindow != null) {
+                Main.getWindow().resultsWindow.updateChromeCast();
+            }
 
         } catch (Exception ex) {
             Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);

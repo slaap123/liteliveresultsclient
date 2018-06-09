@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.phanos.liteliveresultsclient.classes.Atleet;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -149,7 +150,24 @@ public class ResultsHandler extends Thread {
     }
 
     private ArrayList<String> CheckResultsFile(File file, ParFile parFile, ArrayList<String> lines) {
-
+        for(int i=2;i<lines.size();i++){
+            if(lines.get(i).startsWith("#")) continue;
+            String[] row=lines.get(i).split("\t");
+            if(row[3].trim().equals("")){
+                int baan=Integer.parseInt(row[1]);
+                if(parFile.atleten.containsKey(baan)){
+                    row[3]=parFile.atleten.get(baan).atleet.startnummer+"";
+                    row[4]=parFile.atleten.get(baan).atleet.naam;
+                    row[5]=parFile.atleten.get(baan).atleet.info;
+                }
+                lines.set(i, String.join("\t",row));
+            }else if(row[4].trim().equals("")){
+                Atleet atleet=Atleet.getAtleet(Integer.parseInt(row[3]));
+                row[4]=atleet.naam;
+                row[5]=atleet.info;
+                lines.set(i, String.join("\t",row));
+            }
+        }
         if (!lines.get(1).startsWith("#")) {
             System.out.println("addHeaderINFO!!!!");
             ArrayList<String> newLines = new ArrayList<String>();

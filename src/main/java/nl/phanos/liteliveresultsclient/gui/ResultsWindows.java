@@ -44,6 +44,10 @@ import javax.swing.table.TableColumnModel;
 import nl.phanos.liteliveresultsclient.AtletiekNuPanel;
 import nl.phanos.liteliveresultsclient.classes.*;
 import org.apache.http.conn.util.InetAddressUtils;
+import su.litvak.chromecast.api.v2.Application;
+import su.litvak.chromecast.api.v2.ChromeCast;
+import su.litvak.chromecast.api.v2.ChromeCasts;
+import su.litvak.chromecast.api.v2.Status;
 
 /**
  *
@@ -51,6 +55,7 @@ import org.apache.http.conn.util.InetAddressUtils;
  */
 public class ResultsWindows extends javax.swing.JFrame {
 
+    public static String APP_ID = "17063B4B";
     public long currentDisplayDate = 0;
     //a reference to the GraphicsDevice for changing resolution and making 
     //this window fullscreen.
@@ -94,7 +99,17 @@ public class ResultsWindows extends javax.swing.JFrame {
         initCustumComponents();
         initClock();
         setSerieResults();
+        startChromeCast();
+    }
 
+    public void startChromeCast() {
+        try {
+            ChromeCasts.startDiscovery();
+            
+        } catch (IOException ex) {
+            System.out.println(ex.toString());
+            Logger.getLogger(ResultsWindows.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -280,8 +295,8 @@ public class ResultsWindows extends javax.swing.JFrame {
         int cantCols = jTableColumnModel.getColumnCount();
         if (jTable1.getModel().getColumnCount() > 0) {
             jTableColumnModel.getColumn(0).setPreferredWidth((int) (fontSize * 3.0));
-            jTableColumnModel.getColumn(1).setPreferredWidth((int) Math.round(tW - (fontSize * 2.5) - (fontSize * 3.5)));
-            jTableColumnModel.getColumn(2).setPreferredWidth((int) (fontSize * 3.5));
+            jTableColumnModel.getColumn(1).setPreferredWidth((int) Math.round(tW - (fontSize * 2.5) - (fontSize * 5.0)));
+            jTableColumnModel.getColumn(2).setPreferredWidth((int) (fontSize * 5.0));
         }
     }
 
@@ -377,7 +392,7 @@ public class ResultsWindows extends javax.swing.JFrame {
                     JOptionPane.PLAIN_MESSAGE,
                     null,
                     null,
-                    "");
+                    clockServer.getIp());
         } while (!InetAddressUtils.isIPv4Address((String) s));
         clockServer.changeIp((String) s);
     }//GEN-LAST:event_ChangeIpActionPerformed
@@ -387,35 +402,34 @@ public class ResultsWindows extends javax.swing.JFrame {
     }
 
     public void setSerieResults(ResultFile resultFile) {
+        updateChromeCast();
         SerieLabel.setText(resultFile.BelongsTo.onderdeel + " Serie " + resultFile.BelongsTo.serie + " " + resultFile.wind);
         currentDisplayDate = resultFile.BelongsTo.uploadDate;
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         for (ResultFileEntry entry : resultFile.atleten.values()) {
-            ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.plaats, entry.naam, entry.tijdMooi()});
+            ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{entry.plaats, entry.atleet.naam, entry.tijdMooi()});
         }
-        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{jTable1.getRowCount()+1, "", ""});
+        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{jTable1.getRowCount() + 1, "", ""});
         //if (isCellVisible(jTable1, jTable1.getRowCount() - 1, jTable1.getColumnCount())) {
-            Timer timer = new Timer();
-            tt = new TimerTask() {
+        Timer timer = new Timer();
+        tt = new TimerTask() {
 
-                @Override
-                public void run() {
-                    jTable1.scrollRectToVisible(jTable1.getCellRect(currentRow, jTable1.getColumnCount(), true));
-                        //System.out.println("currentRow:"+currentRow);
-                    if (currentRow < jTable1.getRowCount()) {
-                        currentRow++;
-                    } else {
-                        currentRow=0;
-                        //tt.cancel();
-                    }
+            @Override
+            public void run() {
+                jTable1.scrollRectToVisible(jTable1.getCellRect(currentRow, jTable1.getColumnCount(), true));
+                //System.out.println("currentRow:"+currentRow);
+                if (currentRow < jTable1.getRowCount()) {
+                    currentRow++;
+                } else {
+                    currentRow = 0;
+                    //tt.cancel();
                 }
-            };
-            timer.schedule(tt, 0, 3000);
+            }
+        };
+        timer.schedule(tt, 0, 3000);
         //}
         //
     }
-
-    
 
     private void initCustumComponents() {
         logoLabel = new javax.swing.JLabel();
@@ -533,5 +547,30 @@ public class ResultsWindows extends javax.swing.JFrame {
             iconLoc = getClass().getResource("/PhanosAmsterdamLogo.png");
         }
         return iconLoc;
+    }
+
+    public void updateChromeCast() {
+//        if (ChromeCasts.get().size() > 0) {
+//            System.out.println("foudn cc" + ChromeCasts.get().size());
+//            try {
+//                ChromeCast chromecast = ChromeCasts.get().get(0);
+//                // Connect (optional)
+//                // Needed only when 'autoReconnect' is 'false'. 
+//                // Usually not needed and connection will be established automatically.
+//                // chromecast.connect();
+//                // Get device status
+//                Status status = chromecast.getStatus();
+//                System.out.println("isAppAvailable" + (chromecast.isAppAvailable(APP_ID) ? "yes" : "no"));
+//                // Run application if it's not already running
+//                if (chromecast.isAppAvailable(APP_ID) && !status.isAppRunning(APP_ID)) {
+//                    System.out.println("start app");
+//                    Application app = chromecast.launchApp(APP_ID);
+//                    chromecast.load("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
+//                }
+//            } catch (IOException ex) {
+//                System.out.println(ex.toString());
+//                Logger.getLogger(ResultsWindows.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
     }
 }
