@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import nl.phanos.liteliveresultsclient.AtletiekNuPanel;
 import nl.phanos.liteliveresultsclient.LoginHandler;
+import nl.phanos.liteliveresultsclient.classes.ResultFile;
 import nl.phanos.liteliveresultsclient.classes.Wedstrijd;
 
 /**
@@ -78,6 +79,11 @@ public class Main extends javax.swing.JFrame {
             }
         } while (!isCorrect(s));
         AtletiekNuPanel.GetAtletiekNuPanel(jTabbedPane1, s);
+        
+        resultsWindow = new ResultsWindows();
+        resultsWindow.setVisible(true);
+        jCheckBoxMenuItem1.setState(true);
+        
 
     }
 

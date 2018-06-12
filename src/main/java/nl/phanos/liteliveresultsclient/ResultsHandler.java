@@ -23,6 +23,7 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.phanos.liteliveresultsclient.classes.Atleet;
+import nl.phanos.liteliveresultsclient.classes.ResultFile;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -54,6 +55,18 @@ public class ResultsHandler extends Thread {
                 }
                 //System.out.println("start reading");
                 for (File fileEntry : dir.listFiles()) {
+                    if (fileEntry.getName().endsWith("jpg")) {
+                        if(AtletiekNuPanel.panel.phototFiles.get(fileEntry.getName())==null){
+                            AtletiekNuPanel.panel.phototFiles.put(fileEntry.getName(), fileEntry);
+                        }
+                        ResultFile resultFile = AtletiekNuPanel.panel.ResultFiles.get(fileEntry.getName().replace("jpg", "txt"));
+                        if(resultFile!=null&&resultFile.Photo==null){
+                            resultFile.Photo=fileEntry.getAbsolutePath();
+                            if (Main.getWindow().resultsWindow != null) {
+                                Main.getWindow().resultsWindow.setSerieResults(resultFile);
+                            }
+                        }
+                    }else
                     if (fileEntry.getName().endsWith("txt")) {
                         ParFile parFile = AtletiekNuPanel.panel.parFiles.get(fileEntry.getName().replace("txt", "par"));
                         if(parFile==null){
@@ -81,9 +94,17 @@ public class ResultsHandler extends Thread {
                                 parFile.setResults(fileEntry);
                                 parFile.gotResults = true;
                                 files.add(parFile);
+                                AtletiekNuPanel.panel.ResultFiles.put(fileEntry.getName(), parFile.results);
                                 System.out.println("addPar:" + parFile.fileName);
                                 if(!AtletiekNuPanel.panel.live){
                                     parFile.uploadDate=Calendar.getInstance().getTimeInMillis();
+                                }
+                            }
+                            File File = AtletiekNuPanel.panel.phototFiles.get(fileEntry.getName().replace("txt", "jpg"));
+                            if(File!=null&&parFile.results!=null&&parFile.results.Photo==null){
+                                parFile.results.Photo=File.getAbsolutePath();
+                                if (Main.getWindow().resultsWindow != null) {
+                                    Main.getWindow().resultsWindow.setSerieResults(parFile.results);
                                 }
                             }
                         }
@@ -151,8 +172,9 @@ public class ResultsHandler extends Thread {
 
     private ArrayList<String> CheckResultsFile(File file, ParFile parFile, ArrayList<String> lines) {
         for(int i=2;i<lines.size();i++){
-            if(lines.get(i).startsWith("#")) continue;
+            //if(lines.get(i).startsWith("#")) continue;
             String[] row=lines.get(i).split("\t");
+            if(row.length<=3) continue;
             if(row[3].trim().equals("")){
                 int baan=Integer.parseInt(row[1]);
                 if(parFile.atleten.containsKey(baan)){

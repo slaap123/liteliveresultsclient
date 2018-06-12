@@ -22,6 +22,7 @@ public class ResultFile implements java.io.Serializable {
     public String wind;
     public HashMap<Integer, ResultFileEntry> atleten = new HashMap();
     public ParFile BelongsTo;
+    public String Photo;
 
     ResultFile(File file, ParFile BelongsTo) {
         this.BelongsTo = BelongsTo;

@@ -8,14 +8,19 @@ package nl.phanos.liteliveresultsclient.gui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Label;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
@@ -29,6 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -63,13 +69,14 @@ public class ResultsWindows extends javax.swing.JFrame {
 
     //the original resolution before our program is run.
     private DisplayMode dispModeOld = null;
-
+    private ResultFile resultFile=null;
     //variable used to toggle between windowed and fullscreen.
     protected boolean fullscreen = false;
     private ClockServer clockServer;
 
     public int currentRow = 0;
     private TimerTask tt;
+    
 
     /**
      * Creates new form ResultsWindows
@@ -126,11 +133,14 @@ public class ResultsWindows extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         SerieLabel = new java.awt.Label();
+        photopanel = new javax.swing.JPanel();
+        photolabel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jCheckBoxMenuItem2 = new javax.swing.JCheckBoxMenuItem();
         jMenu2 = new javax.swing.JMenu();
         SeparateClock = new javax.swing.JCheckBoxMenuItem();
         ChangeIp = new javax.swing.JMenuItem();
@@ -178,7 +188,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(SerieLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(SerieLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -187,8 +197,30 @@ public class ResultsWindows extends javax.swing.JFrame {
 
         SerieLabel.getAccessibleContext().setAccessibleName("SerieLabel");
 
+        photopanel.setBackground(new java.awt.Color(0, 0, 0));
+        photopanel.setPreferredSize(new java.awt.Dimension(0, 100));
+        photopanel.setRequestFocusEnabled(false);
+
+        javax.swing.GroupLayout photopanelLayout = new javax.swing.GroupLayout(photopanel);
+        photopanel.setLayout(photopanelLayout);
+        photopanelLayout.setHorizontalGroup(
+            photopanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(photopanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(photolabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        photopanelLayout.setVerticalGroup(
+            photopanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(photopanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(photolabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
         LayerdPane.setLayer(jScrollPane1, javax.swing.JLayeredPane.DEFAULT_LAYER);
         LayerdPane.setLayer(jPanel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        LayerdPane.setLayer(photopanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout LayerdPaneLayout = new javax.swing.GroupLayout(LayerdPane);
         LayerdPane.setLayout(LayerdPaneLayout);
@@ -198,15 +230,18 @@ public class ResultsWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(LayerdPaneLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(photopanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1))
         );
         LayerdPaneLayout.setVerticalGroup(
             LayerdPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(LayerdPaneLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))
+                .addGroup(LayerdPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(photopanel, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)))
         );
 
         jMenu1.setText("Options");
@@ -237,6 +272,16 @@ public class ResultsWindows extends javax.swing.JFrame {
             }
         });
         jMenu1.add(jMenuItem2);
+
+        jCheckBoxMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.META_MASK));
+        jCheckBoxMenuItem2.setSelected(true);
+        jCheckBoxMenuItem2.setText("ShowPhoto");
+        jCheckBoxMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jCheckBoxMenuItem2);
 
         jMenuBar1.add(jMenu1);
 
@@ -396,13 +441,20 @@ public class ResultsWindows extends javax.swing.JFrame {
         } while (!InetAddressUtils.isIPv4Address((String) s));
         clockServer.changeIp((String) s);
     }//GEN-LAST:event_ChangeIpActionPerformed
+
+    private void jCheckBoxMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem2ActionPerformed
+        showPhoto();
+    }//GEN-LAST:event_jCheckBoxMenuItem2ActionPerformed
     public void setSerieResults() {
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
         ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{1, "Giulia Kuhn", 5.13});
     }
 
     public void setSerieResults(ResultFile resultFile) {
-        updateChromeCast();
+        //updateChromeCast();
+        this.resultFile=resultFile;
+        System.out.println("photo:"+resultFile.Photo);
+            showPhoto();
         SerieLabel.setText(resultFile.BelongsTo.onderdeel + " Serie " + resultFile.BelongsTo.serie + " " + resultFile.wind);
         currentDisplayDate = resultFile.BelongsTo.uploadDate;
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
@@ -517,6 +569,7 @@ public class ResultsWindows extends javax.swing.JFrame {
     private javax.swing.JCheckBoxMenuItem SeparateClock;
     private java.awt.Label SerieLabel;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -525,6 +578,8 @@ public class ResultsWindows extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel photolabel;
+    private javax.swing.JPanel photopanel;
     // End of variables declaration//GEN-END:variables
     private JLabel logoLabel;
     public JLabel clockLabel;
@@ -573,4 +628,48 @@ public class ResultsWindows extends javax.swing.JFrame {
 //            }
 //        }
     }
+
+    private void showPhoto() {
+        int pheight=jScrollPane1.getPreferredSize().height;
+        if(jCheckBoxMenuItem2.getState()==true&&this.resultFile!=null&&this.resultFile.Photo!=null){
+            ImageIcon myPicture = new ImageIcon(this.resultFile.Photo);
+            Dimension dim=getScaledDimension(myPicture.getIconWidth(),myPicture.getIconHeight(),LayerdPane.getWidth()/2,pheight);
+            Image image = myPicture.getImage(); // transform it 
+            Image newimg = image.getScaledInstance(dim.width, dim.height,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
+            myPicture = new ImageIcon(newimg);  // transform it back
+            photolabel.setIcon(myPicture);
+            photopanel.setPreferredSize(new Dimension(LayerdPane.getWidth()/2,pheight));
+            System.out.println(myPicture.getIconWidth());
+        }else{
+            photopanel.setPreferredSize(new Dimension(0,pheight));
+        }
+        repaint();
+    }
+    public Dimension getScaledDimension(int original_width,int original_height,int bound_width,int bound_height) {
+
+    //int original_width = imgSize.width;
+    //int original_height = imgSize.height;
+    //int  bound_width= boundary.width;
+    // = boundary.height;
+    int new_width = original_width;
+    int new_height = original_height;
+
+    // first check if we need to scale width
+    if (original_width > bound_width) {
+        //scale width to fit
+        new_width = bound_width;
+        //scale height to maintain aspect ratio
+        new_height = (new_width * original_height) / original_width;
+    }
+
+    // then check if we need to scale even with the new height
+    if (new_height > bound_height) {
+        //scale height to fit instead
+        new_height = bound_height;
+        //scale width to maintain aspect ratio
+        new_width = (new_height * original_width) / original_height;
+    }
+
+    return new Dimension(new_width, new_height);
+}
 }

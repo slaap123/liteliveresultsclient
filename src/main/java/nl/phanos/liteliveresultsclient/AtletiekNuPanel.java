@@ -72,7 +72,8 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
     public boolean live = true;
     public boolean slave = false;
     public HashMap<String, ParFile> parFiles = new HashMap<String, ParFile>();
-
+    public HashMap<String, ResultFile> ResultFiles = new HashMap<String, ResultFile>();
+    public HashMap<String, File> phototFiles = new HashMap<String, File>();
     public static AtletiekNuPanel panel;
 
     public static String indentifingColumnName;

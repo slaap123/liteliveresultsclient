@@ -126,11 +126,12 @@ public class ParFile implements java.io.Serializable {
         return lines;
     }
 
-    public void setResults(File file) {
+    public ResultFile setResults(File file) {
         
         resultSize = file.length();
         resultFile=file;
         results=new ResultFile(file,this);
+        return results;
     }
 
     
