@@ -284,7 +284,7 @@ public class LoginHandler {
     public Object[] getEigenWedstrijden() throws Exception{
         ArrayList<Wedstrijd> wedstrijden=new ArrayList<Wedstrijd>();
         String content = GetPageContent("https://www.atletiek.nu/feeder.php?page=search&do=events&search=&predefinedSearchTemplate=3");
-        Element overview = Jsoup.parse(content).getElementById("overview").getElementsByTag("tbody").first();
+        Element overview = Jsoup.parse(content).getElementsByClass("calendarTable").first().getElementsByTag("tbody").first();
         Elements rows = overview.getElementsByTag("tr");
         for (Element row : rows) {
             if(row.hasAttr("onclick")){
