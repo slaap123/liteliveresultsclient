@@ -182,7 +182,7 @@ public class ResultsWindows extends javax.swing.JFrame {
         SerieLabel.setBackground(new java.awt.Color(0, 0, 0));
         SerieLabel.setFont(new java.awt.Font("Lucida Grande", 0, 48)); // NOI18N
         SerieLabel.setForeground(java.awt.Color.yellow);
-        SerieLabel.setText("10m serie 1");
+        SerieLabel.setText("200m T64 Finale");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -447,7 +447,7 @@ public class ResultsWindows extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckBoxMenuItem2ActionPerformed
     public void setSerieResults() {
         ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
-        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{1, "Giulia Kuhn", 5.13});
+        ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{1, "Marlene Van Gansewinkel", 26.12});
     }
 
     public void setSerieResults(ResultFile resultFile) {

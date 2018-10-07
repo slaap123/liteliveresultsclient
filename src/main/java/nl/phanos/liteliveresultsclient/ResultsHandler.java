@@ -55,13 +55,15 @@ public class ResultsHandler extends Thread {
                 }
                 //System.out.println("start reading");
                 for (File fileEntry : dir.listFiles()) {
-                    if (fileEntry.getName().endsWith("jpg")) {
+                    
+                    if (fileEntry.getName().endsWith("png")||fileEntry.getName().endsWith("jpg")) {
                         if(AtletiekNuPanel.panel.phototFiles.get(fileEntry.getName())==null){
                             AtletiekNuPanel.panel.phototFiles.put(fileEntry.getName(), fileEntry);
                         }
-                        ResultFile resultFile = AtletiekNuPanel.panel.ResultFiles.get(fileEntry.getName().replace("jpg", "txt"));
+                        ResultFile resultFile = AtletiekNuPanel.panel.ResultFiles.get(fileEntry.getName().replace("jpg", "txt").replace("png", "txt"));
                         if(resultFile!=null&&resultFile.Photo==null){
                             resultFile.Photo=fileEntry.getAbsolutePath();
+                            System.out.println("found foto");
                             if (Main.getWindow().resultsWindow != null) {
                                 Main.getWindow().resultsWindow.setSerieResults(resultFile);
                             }
@@ -176,14 +178,18 @@ public class ResultsHandler extends Thread {
             String[] row=lines.get(i).split("\t");
             if(row.length<=3) continue;
             if(row[3].trim().equals("")){
+                try{
                 int baan=Integer.parseInt(row[1]);
-                if(parFile.atleten.containsKey(baan)){
-                    row[3]=parFile.atleten.get(baan).atleet.startnummer+"";
-                    row[4]=parFile.atleten.get(baan).atleet.naam;
-                    row[5]=parFile.atleten.get(baan).atleet.info;
+                    if(parFile.atleten.containsKey(baan)){
+                        row[3]=parFile.atleten.get(baan).atleet.startnummer+"";
+                        row[4]=parFile.atleten.get(baan).atleet.naam;
+                        row[5]=parFile.atleten.get(baan).atleet.info;
+                    }
+                    lines.set(i, String.join("\t",row));
+                }catch(Exception e){
+                    
                 }
-                lines.set(i, String.join("\t",row));
-            }else if(row[4].trim().equals("")){
+            }else if(row.length>4&&row[4].trim().equals("")){
                 Atleet atleet=Atleet.getAtleet(Integer.parseInt(row[3]));
                 row[4]=atleet.naam;
                 row[5]=atleet.info;

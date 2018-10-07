@@ -327,12 +327,13 @@ public class AtletiekNuPanel extends JPanel implements TableModelListener {
                     objectinputstream.close();
                     //System.out.println("should have synced");
                 } catch (IOException ex) {
-                    Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(AtletiekNuPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("failed to load old resutls");
+            //e.printStackTrace();
         }
     }
 
